@@ -267,7 +267,7 @@
 
   .chart {
     position: relative;
-    min-height: 340px;
+    min-height: 400px;
     margin-top: clamp(12px, 3vh, 32px);
   }
   .chart svg {
@@ -301,7 +301,8 @@
   .series.gold path { stroke-width: var(--line-w-main); animation-duration: 2.7s; }
   .series-label {
     font: 500 12px var(--body);
-    text-anchor: end;
+    font-variant-numeric: tabular-nums;
+    text-anchor: start;
     paint-order: stroke;
     stroke: var(--bg);
     stroke-width: 4px;
@@ -310,7 +311,26 @@
     animation: fade 0.8s ease forwards;
     animation-delay: 2s;
   }
+  .series-label .val { fill: var(--text); font-weight: 600; font-size: 13px; }
   .chart.dim .series:not(.hot) { opacity: 0.22; }
+  .tag { opacity: 0; pointer-events: none; transition: opacity 0.15s ease; }
+  .tag.on { opacity: 1; }
+  .tag text {
+    fill: var(--text);
+    font: 500 12px var(--body);
+    font-variant-numeric: tabular-nums;
+    paint-order: stroke;
+    stroke: var(--bg);
+    stroke-width: 5px;
+    stroke-linejoin: round;
+  }
+  .tag circle { stroke: var(--bg); stroke-width: 2px; }
+
+  /* The four newer themes let the name and the chart carry the page: no introduction text */
+  :root[data-look="pink"] .intro,
+  :root[data-look="weekly"] .intro,
+  :root[data-look="phosphor"] .intro,
+  :root[data-look="blueprint"] .intro { display: none; }
 
   .now-dot { fill: var(--gold); opacity: 0; animation: fade 0.4s ease forwards 2.9s; }
   .now-ring {
@@ -325,6 +345,7 @@
 
   .contact {
     position: absolute;
+    top: 4px;
     right: var(--gutter);
     text-align: right;
     opacity: 0;
@@ -366,6 +387,8 @@
     border-radius: 2px;
   }
 
+  footer > span:last-child { max-width: 46rem; text-align: right; }
+  @media (max-width: 700px) { footer > span:last-child { text-align: left; } }
   footer {
     display: flex;
     flex-wrap: wrap;
@@ -431,7 +454,7 @@
 
   <footer>
     <span>© 2026 Mert Özkan</span>
-    <span>The lines are illustrative, not market data.</span>
+    <span>Source: FRED, Federal Reserve Bank of St. Louis (CPIAUCSL, UNRATE, DTWEXBGS, DGS10). Each line is scaled to its own range; latest values at right. October 2025 CPI and jobs data were not published, so those lines bridge that month.</span>
   </footer>
 
 <script>
@@ -440,40 +463,28 @@
   const chart = document.getElementById("chart");
   const svg = document.getElementById("svg");
   const contact = document.getElementById("contact");
-  const N = 93;                     // months, Jan 2019 to Sep 2026 (drives the year ticks)
-  const K = 26;                     // control points per line, so the curves stay calm
-  const START_YEAR = 2019;
+  // Real monthly data from FRED, Jan 2019 to Sep 2026 (see the footer for series and caveats).
+  const DATA = {"start":"2019-01","n":93,"y10":[2.63,2.73,2.41,2.51,2.14,2.0,2.02,1.5,1.68,1.69,1.78,1.92,1.51,1.13,0.7,0.64,0.65,0.66,0.55,0.72,0.69,0.88,0.84,0.93,1.11,1.44,1.74,1.65,1.58,1.45,1.24,1.3,1.52,1.55,1.43,1.52,1.79,1.83,2.32,2.89,2.85,2.98,2.67,3.15,3.83,4.1,3.68,3.88,3.52,3.92,3.48,3.44,3.64,3.81,3.97,4.09,4.59,4.88,4.37,3.88,3.99,4.25,4.2,4.69,4.51,4.36,4.09,3.91,3.81,4.28,4.18,4.58,4.58,4.24,4.23,4.17,4.41,4.24,4.37,4.23,4.16,4.11,4.02,4.18,4.26,3.97,4.3,4.4,4.45,4.44,4.75,4.75,5.01],"cpi":[1.49,1.52,1.88,2.0,1.8,1.67,1.83,1.74,1.68,1.73,2.09,2.32,2.6,2.34,1.49,0.31,0.2,0.72,1.0,1.28,1.39,1.23,1.18,1.32,1.37,1.67,2.67,4.13,4.92,5.3,5.25,5.15,5.35,6.24,6.9,7.17,7.56,7.94,8.57,8.23,8.54,8.98,8.46,8.22,8.19,7.76,7.12,6.4,6.33,5.96,4.92,4.95,4.13,3.07,3.29,3.72,3.69,3.25,3.13,3.32,3.09,3.16,3.49,3.36,3.24,2.97,2.94,2.61,2.43,2.58,2.72,2.87,2.99,2.8,2.38,2.33,2.38,2.68,2.74,2.94,3.02,null,2.7,2.65,2.39,2.43,3.29,3.78,4.17,3.46,3.3,3.35,null],"un":[4.0,3.8,3.8,3.7,3.6,3.6,3.7,3.6,3.5,3.6,3.6,3.6,3.6,3.5,4.4,14.8,13.2,11.0,10.2,8.4,7.8,6.9,6.7,6.7,6.4,6.2,6.1,6.1,5.8,5.9,5.4,5.1,4.7,4.5,4.1,3.9,4.0,3.9,3.7,3.7,3.6,3.6,3.5,3.6,3.5,3.6,3.6,3.5,3.5,3.6,3.5,3.4,3.6,3.6,3.5,3.7,3.7,3.9,3.7,3.8,3.7,3.9,3.9,3.9,3.9,4.1,4.2,4.2,4.1,4.1,4.2,4.1,4.0,4.2,4.2,4.2,4.3,4.1,4.3,4.3,4.4,null,4.5,4.4,4.3,4.4,4.3,4.3,4.3,4.2,4.1,4.1,null],"usd":[113.55,114.2,115.14,115.33,116.73,114.58,115.49,118.16,117.95,115.91,117.12,114.67,115.73,117.66,122.53,122.33,120.95,120.46,117.21,115.76,116.95,116.14,113.23,111.32,111.95,112.83,113.82,112.08,110.76,112.55,112.67,113.11,114.64,114.13,116.21,115.28,115.57,115.22,115.22,119.49,118.07,120.97,121.77,123.53,127.51,127.62,123.52,121.43,118.98,121.33,119.36,119.22,120.97,119.36,117.82,120.22,122.31,123.84,120.24,118.42,120.43,121.18,121.02,122.99,122.1,124.21,123.64,122.33,121.29,124.8,126.58,129.28,128.48,128.28,126.71,122.59,121.77,119.41,121.72,120.21,120.14,121.39,121.05,119.75,117.9,117.82,121.03,118.67,118.88,120.92,119.7,118.57,119.51],"asof":"2026-09-18"};
+  const N = DATA.n;
+  const START_YEAR = +DATA.start.slice(0, 4);
+  const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const monthLabel = i => { const m = +DATA.start.slice(5) - 1 + i; return MON[m % 12] + " " + (START_YEAR + Math.floor(m / 12)); };
 
-  function rng(seed) {
-    return () => {
-      seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
-      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
+  // Each line is one real series, scaled to its own low and high so all four share the chart.
+  function mk(name, key, unit, dec, color, delay, gold) {
+    const raw = DATA[key], vals = raw.filter(v => v !== null);
+    const lo = Math.min(...vals), hi = Math.max(...vals);
+    const pts = [];
+    raw.forEach((v, i) => { if (v !== null) pts.push({ i, v, u: (v - lo) / (hi - lo) }); });
+    return { name, unit, dec, color, delay, gold, pts };
   }
-  const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
-
-  // Each series is a mean-reverting walk, scaled into [lo, hi] and steered to a fixed end level.
-  function makeSeries(seed, lo, hi, end) {
-    const r = rng(seed);
-    let v = 0, raw = [];
-    for (let i = 0; i < K; i++) { v += (r() - 0.5) * 0.9 - v * 0.1; raw.push(v); }
-    const min = Math.min(...raw), max = Math.max(...raw);
-    return raw.map((n, i) => {
-      const x = i / (K - 1);
-      let y = lo + ((n - min) / (max - min)) * (hi - lo);
-      y += Math.max(0, 0.44 - y) * smooth(0.45, 0.6, x) * (end > 0.4 ? 1 : 0); // keep right side clear for the email
-      return y * (1 - smooth(0.62, 1, x)) + end * smooth(0.62, 1, x);
-    });
-  }
-
   const series = [
-    { name: "Inflation",  color: "var(--blue)",  data: makeSeries(11, 0.25, 0.95, 0.56), delay: 0 },
-    { name: "Employment", color: "var(--teal)",  data: makeSeries(29, 0.3, 0.95, 0.70),  delay: 0.15 },
-    { name: "Currencies", color: "var(--lilac)", data: makeSeries(47, 0.2, 0.95, 0.84),  delay: 0.3 },
-    { name: "",           color: "var(--gold)",  data: makeSeries(83, 0.5, 0.95, 0.38),  delay: 0.5, gold: true }
+    mk("Inflation",      "cpi", "%", 1, "var(--blue)",  0),
+    mk("Unemployment",   "un",  "%", 1, "var(--teal)",  0.15),
+    mk("Dollar index",   "usd", "",  1, "var(--lilac)", 0.3),
+    mk("10-year yield",  "y10", "%", 2, "var(--gold)",  0.5, true)
   ];
+  const valueText = (s, p) => p.v.toFixed(s.dec) + s.unit;
 
   function el(name, attrs, parent) {
     const e = document.createElementNS(NS, name);
@@ -482,10 +493,10 @@
     return e;
   }
 
-  // Catmull-Rom spline converted to cubic Béziers, or straight segments for the Terminal theme.
+  // Catmull-Rom spline converted to cubic Béziers, or straight segments for the linear themes.
   function pathFrom(pts) {
     if (shape === "linear") return "M" + pts.map(p => p[0].toFixed(1) + "," + p[1].toFixed(1)).join("L");
-    let d = `M${pts[0][0]},${pts[0][1]}`;
+    let d = `M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}`;
     for (let i = 0; i < pts.length - 1; i++) {
       const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
       const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
@@ -502,12 +513,21 @@
     const g = el("g", { class: "series" + (s.gold ? " gold" : "") }, svg);
     g.style.setProperty("--delay", s.delay + "s");
     const p = el("path", { pathLength: 1, stroke: s.color }, g);
-    const label = s.name ? el("text", { class: "series-label", fill: s.color }, g) : null;
-    if (label) label.textContent = s.name;
-    return { g, p, label };
+    const label = el("text", { class: "series-label" }, g);
+    const nm = el("tspan", { fill: s.color }, label);
+    nm.textContent = s.name;
+    const val = el("tspan", { class: "val", dy: "1.2em" }, label);
+    val.textContent = valueText(s, s.pts[s.pts.length - 1]);
+    return { g, p, label, nm, val };
   });
   const ring = el("circle", { class: "now-ring", r: 5 }, svg);
   const dot = el("circle", { class: "now-dot", r: 5 }, svg);
+  const tag = el("g", { class: "tag" }, svg);
+  const tagDot = el("circle", { r: 4.5 }, tag);
+  const tagTxt = el("text", { "text-anchor": "middle" }, tag);
+  svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", "Line chart, " + monthLabel(0) + " to " + monthLabel(N - 1) + ", each line scaled to its own range. Latest: " +
+    series.map(s => s.name + " " + valueText(s, s.pts[s.pts.length - 1])).join(", ") + ".");
 
   let geo = [];
   let shape = "smooth";
@@ -515,8 +535,11 @@
   function layout() {
     const W = chart.clientWidth, H = chart.clientHeight;
     const g = Math.max(20, Math.min(64, window.innerWidth * 0.05));
-    const top = 8, bottom = H - 34;
-    const x0 = g, x1 = W - g;
+    const labelW = Math.min(150, Math.max(96, W * 0.14));   // room to the right of the lines for the latest values
+    const top = Math.min(contact.offsetHeight + 28, H * 0.45), bottom = H - 34;
+    const x0 = g, x1 = W - g - labelW;
+    const X = i => x0 + (x1 - x0) * i / (N - 1);
+    const Y = u => top + 8 + (1 - u) * (bottom - top - 16);
     svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
 
     gridG.replaceChildren();
@@ -527,44 +550,59 @@
 
     tickG.replaceChildren();
     for (let k = 0; k * 12 < N; k++) {
-      const x = x0 + (x1 - x0) * (k * 12) / (N - 1);
+      const x = X(k * 12);
       el("line", { class: "tick", x1: x, x2: x, y1: bottom, y2: bottom + 6 }, tickG);
       const t = el("text", { class: "tick-label", x: x + 4, y: bottom + 22 }, tickG);
       t.textContent = START_YEAR + k;
     }
 
     geo = series.map((s, i) => {
-      const pts = s.data.map((v, j) => [x0 + (x1 - x0) * j / (K - 1), top + v * (bottom - top - 8)]);
+      const pts = s.pts.map(p => [X(p.i), Y(p.u)]);
       els[i].p.setAttribute("d", pathFrom(pts));
-      const end = pts[pts.length - 1];
-      if (els[i].label) { els[i].label.setAttribute("x", end[0]); els[i].label.setAttribute("y", end[1] - 12); }
       return pts;
+    });
+
+    // End labels: keep them apart if two lines finish close together.
+    const ends = geo.map((pts, i) => ({ i, x: pts[pts.length - 1][0], y: pts[pts.length - 1][1] })).sort((a, b) => a.y - b.y);
+    const ly = ends.map(e => e.y);
+    for (let k = 1; k < ly.length; k++) ly[k] = Math.max(ly[k], ly[k - 1] + 34);
+    ends.forEach((e, k) => {
+      const { label, nm, val } = els[e.i];
+      label.setAttribute("x", e.x + 12); label.setAttribute("y", ly[k] - 4);
+      nm.setAttribute("x", e.x + 12); val.setAttribute("x", e.x + 12);
     });
 
     const gold = geo[geo.length - 1], end = gold[gold.length - 1];
     for (const c of [dot, ring]) { c.setAttribute("cx", end[0]); c.setAttribute("cy", end[1]); }
-    contact.style.bottom = (H - end[1] + 20) + "px";
   }
 
-  // Dim the other lines when the pointer is near one of them.
+  // Dim the other lines when the pointer is near one of them, and read out the month under it.
   chart.addEventListener("pointermove", e => {
     if (e.target.closest(".contact")) return clear();
     const box = svg.getBoundingClientRect();
     const px = e.clientX - box.left, py = e.clientY - box.top;
-    let best = -1, bestD = 26;
+    let best = -1, bestD = 26, bestJ = 0;
     geo.forEach((pts, i) => {
+      if (px < pts[0][0] - 8 || px > pts[pts.length - 1][0] + 8) return;
       let j = 0;
       while (j < pts.length - 2 && pts[j + 1][0] < px) j++;
       const a = pts[j], b = pts[j + 1];
       const t = Math.min(1, Math.max(0, (px - a[0]) / (b[0] - a[0])));
       const d = Math.abs(a[1] + (b[1] - a[1]) * t - py);
-      if (d < bestD) { bestD = d; best = i; }
+      if (d < bestD) { bestD = d; best = i; bestJ = t > 0.5 ? j + 1 : j; }
     });
     els.forEach((o, i) => o.g.classList.toggle("hot", i === best));
     chart.classList.toggle("dim", best >= 0);
+    if (best < 0) { tag.classList.remove("on"); return; }
+    const p = geo[best][bestJ], s = series[best], w = Math.min(Math.max(p[0], 70), box.width - 70);
+    tagDot.setAttribute("cx", p[0]); tagDot.setAttribute("cy", p[1]); tagDot.setAttribute("fill", s.color);
+    tagTxt.setAttribute("x", w); tagTxt.setAttribute("y", p[1] - 14);
+    tagTxt.textContent = monthLabel(s.pts[bestJ].i) + "  " + valueText(s, s.pts[bestJ]);
+    tag.classList.add("on");
   });
-  function clear() { chart.classList.remove("dim"); els.forEach(o => o.g.classList.remove("hot")); }
+  function clear() { chart.classList.remove("dim"); tag.classList.remove("on"); els.forEach(o => o.g.classList.remove("hot")); }
   chart.addEventListener("pointerleave", clear);
+
 
   new ResizeObserver(layout).observe(chart);
   layout();

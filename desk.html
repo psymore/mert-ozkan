@@ -4,11 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#0d0d0d" id="theme-color">
 <title>Mert Özkan</title>
 <meta name="description" content="Mert Özkan. US rates, inflation and jobs, from FRED data. Contact: mert.ozkan@example.com">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Bodoni+Moda:opsz,wght@6..96,400..600&family=Schibsted+Grotesk:wght@400..700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400..600&family=Libre+Franklin:wght@400..800&family=JetBrains+Mono:wght@400..600&family=Archivo:wght@400..800&display=swap" rel="stylesheet">
+<script>try{var t=location.hash.slice(1)||localStorage.getItem("theme");if(t)document.documentElement.dataset.look=t}catch(e){}</script>
 <style>
   /* Dark first. Values come from the validated reference palette (dataviz skill). */
   :root {
@@ -25,13 +27,18 @@
     --s2: #d95926;
     --s3: #199e70;
     --neg: #e66767;
+    --accent: #3987e5;
     --shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
     --gutter: clamp(16px, 4vw, 40px);
     --sans: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
     --mono: "Geist Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --head: var(--sans);
+    --head-w: 600;
+    --radius: 6px;
+    --radius-s: 4px;
   }
   @media (prefers-color-scheme: light) {
-    :root {
+    :root:not([data-look]), :root[data-look="desk"] {
       color-scheme: light;
       --page: #f9f9f7;
       --surface: #fcfcfb;
@@ -45,11 +52,78 @@
       --s2: #eb6834;
       --s3: #1baf7a;
       --neg: #e34948;
+      --accent: #2a78d6;
       --shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
     }
   }
 
+  /* Themes shared with the front page. Series colours were run through the dataviz validator on each surface. */
+  :root[data-look="ink"] {
+    color-scheme: dark;
+    --page: #0c1929; --surface: #112238; --ink: #e7ecf3; --ink-2: #b4c0d0; --muted: #8b9cb2;
+    --grid: #1d3149; --axis: #2c4566; --border: rgba(231, 236, 243, 0.12);
+    --s1: #5b9be8; --s2: #e8b24a; --s3: #2fae82; --neg: #e8776b; --accent: #e8b24a;
+    --sans: "Hanken Grotesk", "Geist", system-ui, sans-serif;
+    --head: "Bodoni Moda", Didot, Georgia, serif; --head-w: 500;
+  }
+  :root[data-look="ledger"] {
+    color-scheme: light;
+    --page: #edf0ee; --surface: #f6f8f7; --ink: #0f1e1b; --ink-2: #3a4a45; --muted: #52625c;
+    --grid: #d8dedb; --axis: #b3bdb9; --border: rgba(15, 30, 27, 0.12);
+    --s1: #2540d9; --s2: #c2571a; --s3: #1f7466; --neg: #c22f2f; --accent: #2540d9;
+    --shadow: 0 6px 24px rgba(15, 30, 27, 0.12);
+    --sans: "Schibsted Grotesk", "Geist", system-ui, sans-serif;
+    --head: "Schibsted Grotesk", "Geist", system-ui, sans-serif; --head-w: 600;
+  }
+  :root[data-look="terminal"] {
+    color-scheme: dark;
+    --page: #0b0c0c; --surface: #141514; --ink: #e8e6df; --ink-2: #b5b3a8; --muted: #8f8d83;
+    --grid: #262723; --axis: #34352f; --border: rgba(232, 230, 223, 0.12);
+    --s1: #ffa028; --s2: #4db8d6; --s3: #e0708c; --neg: #ff5c4d; --accent: #ffa028;
+    --sans: "IBM Plex Mono", ui-monospace, Consolas, monospace; --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+    --head: "IBM Plex Mono", ui-monospace, Consolas, monospace; --head-w: 500;
+    --radius: 0; --radius-s: 0;
+  }
+  :root[data-look="pink"] {
+    color-scheme: light;
+    --page: #fff1e5; --surface: #fff8f0; --ink: #33302e; --ink-2: #4d4844; --muted: #665f5a;
+    --grid: #ead9c9; --axis: #cdb8a4; --border: rgba(51, 48, 46, 0.14);
+    --s1: #0f5499; --s2: #c7601a; --s3: #1a9a6c; --neg: #990f3d; --accent: #990f3d;
+    --shadow: 0 6px 24px rgba(51, 48, 46, 0.14);
+    --sans: "Hanken Grotesk", "Geist", system-ui, sans-serif;
+    --head: "Newsreader", Georgia, serif; --head-w: 500;
+  }
+  :root[data-look="weekly"] {
+    color-scheme: light;
+    --page: #dde8ee; --surface: #e9f1f5; --ink: #0d1417; --ink-2: #35444c; --muted: #4a5a63;
+    --grid: #c6d4dc; --axis: #a9bac4; --border: rgba(13, 20, 23, 0.14);
+    --s1: #006ba2; --s2: #c8641a; --s3: #248f63; --neg: #e3120b; --accent: #e3120b;
+    --shadow: 0 6px 24px rgba(13, 20, 23, 0.14);
+    --sans: "Libre Franklin", "Geist", system-ui, sans-serif;
+    --head: "Libre Franklin", "Geist", system-ui, sans-serif; --head-w: 800;
+    --radius: 2px; --radius-s: 2px;
+  }
+  :root[data-look="phosphor"] {
+    color-scheme: dark;
+    --page: #040b06; --surface: #08130b; --ink: #c9f2d2; --ink-2: #9cc8a8; --muted: #6f9a7b;
+    --grid: #15281a; --axis: #22402a; --border: rgba(201, 242, 210, 0.14);
+    --s1: #3dff7a; --s2: #ffb02e; --s3: #4fd6c8; --neg: #ff6b6b; --accent: #3dff7a;
+    --sans: "JetBrains Mono", ui-monospace, Consolas, monospace; --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+    --head: "JetBrains Mono", ui-monospace, Consolas, monospace; --head-w: 600;
+    --radius: 0; --radius-s: 0;
+  }
+  :root[data-look="blueprint"] {
+    color-scheme: dark;
+    --page: #1436c9; --surface: #0f2fae; --ink: #f3f6ff; --ink-2: #d5defc; --muted: #bac7f7;
+    --grid: #2a49cf; --axis: #4a68e0; --border: rgba(243, 246, 255, 0.22);
+    --s1: #ffffff; --s2: #ffd84d; --s3: #8fe3ff; --neg: #ffb3d1; --accent: #ffd84d;
+    --shadow: 0 6px 24px rgba(4, 16, 90, 0.5);
+    --sans: "Archivo", "Geist", system-ui, sans-serif;
+    --head: "Archivo", "Geist", system-ui, sans-serif; --head-w: 700;
+  }
+
   * { box-sizing: border-box; }
+  html { background: var(--page); }
   body {
     margin: 0;
     background: var(--page);
@@ -75,7 +149,7 @@
     padding-bottom: 16px;
     border-bottom: 1px solid var(--border);
   }
-  h1 { margin: 0; font: 600 1.5rem/1.1 var(--sans); letter-spacing: -0.02em; }
+  h1 { margin: 0; font: var(--head-w) 1.5rem/1.1 var(--head); letter-spacing: -0.02em; }
   .asof {
     display: flex;
     align-items: center;
@@ -91,7 +165,7 @@
     color: var(--ink);
     font: 500 0.9375rem var(--mono);
     text-decoration: underline;
-    text-decoration-color: var(--s1);
+    text-decoration-color: var(--accent);
     text-underline-offset: 0.25em;
     text-decoration-thickness: 1px;
   }
@@ -101,14 +175,50 @@
     background: transparent;
     color: var(--ink-2);
     border: 1px solid var(--border);
-    border-radius: 4px;
+    border-radius: var(--radius-s);
     font: 500 0.8125rem var(--sans);
     cursor: pointer;
   }
   .btn:hover { color: var(--ink); border-color: var(--muted); }
-  a:focus-visible, button:focus-visible, summary:focus-visible {
-    outline: 2px solid var(--s1);
+  a:focus-visible, button:focus-visible, summary:focus-visible, select:focus-visible {
+    outline: 2px solid var(--accent);
     outline-offset: 2px;
+  }
+  .pick { position: relative; display: inline-flex; align-items: center; }
+  .pick select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding: 6px 30px 6px 32px;
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-s);
+    font: 500 0.8125rem var(--sans);
+    cursor: pointer;
+  }
+  .pick select:hover { border-color: var(--muted); }
+  .pick select option { background: var(--surface); color: var(--ink); }
+  .pick i {
+    position: absolute;
+    left: 10px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--sw-bg);
+    box-shadow: inset 0 0 0 1px var(--muted), inset 0 0 0 3px var(--sw-bg), inset 0 0 0 12px var(--sw-ac);
+    pointer-events: none;
+  }
+  .pick::after {
+    content: "";
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    width: 5px;
+    height: 5px;
+    border: solid var(--muted);
+    border-width: 0 1.5px 1.5px 0;
+    transform: translateY(-70%) rotate(45deg);
+    pointer-events: none;
   }
   .back { color: var(--muted); font-size: 0.8125rem; text-decoration: none; }
   .back:hover { color: var(--ink); }
@@ -120,7 +230,7 @@
     gap: 1px;
     background: var(--border);
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: var(--radius);
     overflow: hidden;
   }
   .kpi { position: relative; padding: 14px 16px 12px; background: var(--surface); min-width: 0; }
@@ -151,12 +261,12 @@
     background: transparent;
     color: var(--ink-2);
     border: 1px solid var(--border);
-    border-radius: 4px;
+    border-radius: var(--radius-s);
     font: 500 0.8125rem var(--mono);
     cursor: pointer;
   }
   .range button:hover { color: var(--ink); }
-  .range button[aria-pressed="true"] { color: var(--ink); border-color: var(--ink-2); background: var(--surface); }
+  .range button[aria-pressed="true"] { color: var(--ink); border-color: var(--accent); background: var(--surface); }
 
   /* Chart panels */
   .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
@@ -166,10 +276,11 @@
     padding: 16px;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: var(--radius);
   }
   .panel.wide { grid-column: 1 / -1; }
-  .panel h3 { margin: 0; font: 500 1rem/1.3 var(--sans); }
+  .head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .panel h3 { margin: 0; font: 500 1rem/1.3 var(--head); }
   .panel .sub { margin: 2px 0 0; color: var(--muted); font-size: 0.8125rem; }
   .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 10px 0 0; padding: 0; list-style: none; font-size: 0.8125rem; color: var(--ink-2); }
   .legend li { display: flex; align-items: center; gap: 6px; }
@@ -187,7 +298,7 @@
     padding: 8px 10px;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 4px;
+    border-radius: var(--radius-s);
     box-shadow: var(--shadow);
     font-size: 0.75rem;
     pointer-events: none;
@@ -199,8 +310,30 @@
   .tip em { color: var(--muted); font-style: normal; font-family: var(--mono); }
 
   /* Table view */
-  details { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; }
-  summary { padding: 12px 16px; cursor: pointer; color: var(--ink-2); font-size: 0.875rem; }
+  details { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    color: var(--ink-2);
+    font-size: 0.875rem;
+    list-style: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border: solid var(--muted);
+    border-width: 0 1.5px 1.5px 0;
+    transform: translateY(-2px) rotate(45deg);
+    transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  details.is-open summary::after { transform: translateY(2px) rotate(225deg); }
+  .fold { overflow: hidden; }
   .table-scroll { overflow-x: auto; padding: 0 16px 16px; }
   table { width: 100%; border-collapse: collapse; font: 400 0.8125rem var(--mono); }
   th, td { padding: 6px 12px 6px 0; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--grid); }
@@ -215,7 +348,7 @@
     .grid { grid-template-columns: minmax(0, 1fr); }
     .kpi .val { font-size: 1.5rem; }
   }
-  @media (prefers-reduced-motion: reduce) { .pulse { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { .pulse { animation: none; } summary::after { transition: none; } }
 </style>
 </head>
 <body>
@@ -228,6 +361,20 @@
     <div class="contact">
       <a class="email" href="mailto:mert.ozkan@example.com">mert.ozkan@example.com</a>
       <button class="btn" id="copy" type="button">Copy address</button>
+      <label class="pick" for="theme-select">
+        <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Theme</span>
+        <i id="swatch"></i>
+        <select id="theme-select">
+          <option value="desk">Desk</option>
+          <option value="ink">Ink</option>
+          <option value="ledger">Ledger</option>
+          <option value="terminal">Terminal</option>
+          <option value="pink">Pink paper</option>
+          <option value="weekly">Weekly</option>
+          <option value="phosphor">Phosphor</option>
+          <option value="blueprint">Blueprint</option>
+        </select>
+      </label>
       <a class="back" href="./">Original page</a>
       <span id="status" role="status" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"></span>
     </div>
@@ -247,8 +394,13 @@
 
   <section class="grid">
     <figure class="panel wide">
-      <h3>Treasury yields and the fed funds rate</h3>
-      <p class="sub">Percent. Yields are weekly closes; fed funds is the monthly average.</p>
+      <div class="head">
+        <div>
+          <h3>Treasury yields and the fed funds rate</h3>
+          <p class="sub">Percent. Yields are weekly closes; fed funds is the monthly average.</p>
+        </div>
+        <button class="btn" id="explode" type="button" aria-pressed="false" title="Pull the lines apart into lanes, each with its own scale">Explode</button>
+      </div>
       <ul class="legend" id="lg1"></ul>
       <div class="plot" id="c1"></div>
     </figure>
@@ -268,9 +420,11 @@
 
   <details>
     <summary>View the last 12 months as a table</summary>
-    <div class="table-scroll">
-      <table id="tbl"></table>
-      <p class="note">Yields and the spread show the last reading in each month. Percent, except the spread in percentage points.</p>
+    <div class="fold">
+      <div class="table-scroll">
+        <table id="tbl"></table>
+        <p class="note">Yields and the spread show the last reading in each month. Percent, except the spread in percentage points.</p>
+      </div>
     </div>
   </details>
 
@@ -346,6 +500,17 @@ const D = {"asof":"2026-09-18","y10":[["2019-01-04",2.67],["2019-01-11",2.71],["
     for (let v = Math.floor(lo / step) * step; v <= Math.ceil(hi / step) * step + step / 2; v += step) out.push(+v.toFixed(6));
     return { ticks: out, step };
   };
+  /* A chart's view is what the plot shows: the first date and the y extent. It is plain state so a range change can tween it. */
+  const tMaxOf = cfg => Math.max(...cfg.series.map(s => last(s.data).t));
+  function viewFor(cfg, years) {
+    const tMax = tMaxOf(cfg);
+    const tMin = years ? tMax - years * 365.25 * MS : Math.min(...cfg.series.map(s => s.data[0].t));
+    let lo = Infinity, hi = -Infinity;
+    cfg.series.forEach(s => s.data.forEach(p => { if (p.t >= tMin) { lo = Math.min(lo, p.v); hi = Math.max(hi, p.v); } }));
+    if (cfg.zero) { lo = Math.min(lo, 0); hi = Math.max(hi, 0); }
+    const { ticks } = niceTicks(lo, hi);
+    return { tMin, y0: ticks[0], y1: last(ticks) };
+  }
   const nearest = (pts, t) => {
     let a = 0, b = pts.length - 1;
     while (a < b) { const m = (a + b + 1) >> 1; if (pts[m].t <= t) a = m; else b = m - 1; }
@@ -362,28 +527,52 @@ const D = {"asof":"2026-09-18","y10":[["2019-01-04",2.67],["2019-01-11",2.71],["
   function draw(host, cfg) {
     const W = host.clientWidth;
     if (!W) return;
-    const H = cfg.h(W);
+    const k = cfg.k || 0;
+    const H = Math.round(cfg.h(W) * (1 + 0.5 * k));
     const labels = W > 520;
     const m = { l: 36, r: labels && !cfg.zero ? 96 : 12, t: 10, b: 24 };
     const iw = W - m.l - m.r, ih = H - m.t - m.b;
-    const tMax = Math.max(...cfg.series.map(s => last(s.data).t));
-    const tMin = state.years ? tMax - state.years * 365.25 * MS : Math.min(...cfg.series.map(s => s.data[0].t));
-    const vis = cfg.series.map(s => ({ ...s, pts: s.data.filter(p => p.t >= tMin) }));
-    let lo = Infinity, hi = -Infinity;
-    vis.forEach(s => s.pts.forEach(p => { lo = Math.min(lo, p.v); hi = Math.max(hi, p.v); }));
-    if (cfg.zero) { lo = Math.min(lo, 0); hi = Math.max(hi, 0); }
-    const { ticks, step } = niceTicks(lo, hi);
-    const y0 = ticks[0], y1 = last(ticks);
+    const tMax = tMaxOf(cfg);
+    const { tMin, y0, y1 } = cfg.view;
+    // pts are what the pointer can land on; dpts start a little earlier so a line runs in from the left edge while the range moves
+    const vis = cfg.series.map(s => ({ ...s, pts: s.data.filter(p => p.t >= tMin), dpts: s.data.filter(p => p.t >= tMin - 45 * MS) }));
+    const { ticks: allTicks, step } = niceTicks(y0, y1);
+    const eps = (y1 - y0) * 1e-6;
+    const ticks = allTicks.filter(v => v >= y0 - eps && v <= y1 + eps);
+    const dp = step >= 1 ? 0 : Math.abs(step * 10 - Math.round(step * 10)) < 1e-6 ? 1 : 2;
     const X = t => m.l + ((t - tMin) / (tMax - tMin)) * iw;
     const Y = v => m.t + ih - ((v - y0) / (y1 - y0)) * ih;
-    const path = pts => pts.map((p, i) => (i ? "L" : "M") + X(p.t).toFixed(1) + "," + Y(p.v).toFixed(1)).join("");
+    // Exploded view: each series gets its own lane and its own scale; k blends from the shared axis to the lanes.
+    const n = vis.length, gap = 12, lh = (ih - gap * (n - 1)) / n;
+    const lane = vis.map((s, i) => {
+      let lo = Infinity, hi = -Infinity;
+      s.pts.forEach(p => { lo = Math.min(lo, p.v); hi = Math.max(hi, p.v); });
+      const pad = (hi - lo || 1) * 0.1, top = m.t + i * (lh + gap);
+      return { lo: lo - pad, hi: hi + pad, top, bot: top + lh, rawLo: lo, rawHi: hi };
+    });
+    const Ys = (i, v) => {
+      if (!k) return Y(v);
+      const L = lane[i], yl = L.bot - ((v - L.lo) / (L.hi - L.lo)) * lh, yo = Y(v);
+      return yo + (yl - yo) * k;
+    };
+    const path = (pts, si) => pts.map((p, i) => (i ? "L" : "M") + X(p.t).toFixed(1) + "," + (si === undefined ? Y(p.v) : Ys(si, p.v)).toFixed(1)).join("");
     const col = c => css(c);
 
     let g = "";
     ticks.forEach(v => {
-      g += `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="${col("--grid")}"/>`;
-      g += `<text x="${m.l - 8}" y="${Y(v) + 4}" text-anchor="end">${v.toFixed(step < 1 ? 1 : 0)}</text>`;
+      g += `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="${col("--grid")}" opacity="${1 - k}"/>`;
+      g += `<text x="${m.l - 8}" y="${Y(v) + 4}" text-anchor="end" opacity="${1 - k}">${v.toFixed(dp)}</text>`;
     });
+    if (k > 0.01) {
+      const f = lo2 => (lo2 < 2 ? 2 : 1);
+      lane.forEach((L, i) => {
+        const d = f(L.rawHi - L.rawLo);
+        g += `<rect x="${m.l}" y="${L.top}" width="${iw}" height="${lh}" fill="${col("--grid")}" opacity="${0.35 * k}"/>
+              <text class="lab" x="${m.l + 8}" y="${L.top + 15}" opacity="${k}">${vis[i].name}</text>
+              <text x="${m.l - 8}" y="${L.top + 10}" text-anchor="end" opacity="${k}">${L.rawHi.toFixed(d)}</text>
+              <text x="${m.l - 8}" y="${L.bot - 2}" text-anchor="end" opacity="${k}">${L.rawLo.toFixed(d)}</text>`;
+      });
+    }
 
     const spanY = (tMax - tMin) / (365.25 * MS);
     const every = spanY > 3 ? 12 : spanY > 1.6 ? 6 : 3;
@@ -395,25 +584,27 @@ const D = {"asof":"2026-09-18","y10":[["2019-01-04",2.67],["2019-01-11",2.71],["
       }
     }
 
-    let marks = "", defs = "";
+    let marks = "", defs = "", lines = "";
     if (cfg.zero) {
       const z = Y(0), id = cfg.id;
       defs = `<clipPath id="${id}p"><rect x="${m.l}" y="${m.t}" width="${iw}" height="${Math.max(0, z - m.t)}"/></clipPath>
               <clipPath id="${id}n"><rect x="${m.l}" y="${z}" width="${iw}" height="${Math.max(0, m.t + ih - z)}"/></clipPath>`;
-      const pts = vis[0].pts;
+      const pts = vis[0].dpts;
       const area = `M${X(pts[0].t)},${z}` + pts.map(p => `L${X(p.t).toFixed(1)},${Y(p.v).toFixed(1)}`).join("") + `L${X(last(pts).t)},${z}Z`;
-      marks += `<path d="${area}" fill="${col("--s1")}" fill-opacity=".28" clip-path="url(#${id}p)"/>
+      lines += `<path d="${area}" fill="${col("--s1")}" fill-opacity=".28" clip-path="url(#${id}p)"/>
                 <path d="${area}" fill="${col("--neg")}" fill-opacity=".28" clip-path="url(#${id}n)"/>
                 <line x1="${m.l}" x2="${W - m.r}" y1="${z}" y2="${z}" stroke="${col("--axis")}"/>
                 <path d="${path(pts)}" fill="none" stroke="${col("--s1")}" stroke-width="2" clip-path="url(#${id}p)"/>
                 <path d="${path(pts)}" fill="none" stroke="${col("--neg")}" stroke-width="2" clip-path="url(#${id}n)"/>`;
     } else {
-      vis.forEach(s => {
-        marks += `<path d="${path(s.pts)}" fill="none" stroke="${col(s.c)}" stroke-width="2" stroke-linejoin="round"/>`;
+      vis.forEach((s, i) => {
+        lines += `<path d="${path(s.dpts, i)}" fill="none" stroke="${col(s.c)}" stroke-width="2" stroke-linejoin="round"/>`;
       });
     }
+    defs += `<clipPath id="${cfg.id}c"><rect x="${m.l}" y="${m.t - 3}" width="${iw}" height="${ih + 6}"/></clipPath>`;
+    marks += `<g clip-path="url(#${cfg.id}c)">${lines}</g>`;
     if (labels && !cfg.zero) {
-      const ls = vis.map(s => ({ s, y: Y(last(s.pts).v) })).sort((a, b) => a.y - b.y);
+      const ls = vis.map((s, i) => ({ s, y: Ys(i, last(s.pts).v) })).sort((a, b) => a.y - b.y);
       for (let i = 1; i < ls.length; i++) ls[i].y = Math.max(ls[i].y, ls[i - 1].y + 15);
       ls.forEach(l => {
         const e = last(l.s.pts);
@@ -421,9 +612,9 @@ const D = {"asof":"2026-09-18","y10":[["2019-01-04",2.67],["2019-01-11",2.71],["
                   <text class="lab" x="${X(e.t) + 22}" y="${l.y + 4}">${l.s.label}</text>`;
       });
     }
-    vis.forEach(s => {
+    vis.forEach((s, i) => {
       const e = last(s.pts), c = cfg.zero ? (e.v >= 0 ? "--s1" : "--neg") : s.c;
-      marks += `<circle cx="${X(e.t)}" cy="${Y(e.v)}" r="4" fill="${col(c)}" stroke="${col("--surface")}" stroke-width="2"/>`;
+      marks += `<circle cx="${X(e.t)}" cy="${Ys(i, e.v)}" r="4" fill="${col(c)}" stroke="${col("--surface")}" stroke-width="2"/>`;
     });
 
     host.innerHTML = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${cfg.aria}">
@@ -444,7 +635,7 @@ const D = {"asof":"2026-09-18","y10":[["2019-01-04",2.67],["2019-01-11",2.71],["
       let rows = "";
       vis.forEach((s, i) => {
         const p = nearest(s.pts, snap.t), c = cfg.zero ? (p.v >= 0 ? "--s1" : "--neg") : s.c;
-        dots[i].setAttribute("cx", X(p.t)); dots[i].setAttribute("cy", Y(p.v)); dots[i].setAttribute("fill", col(c));
+        dots[i].setAttribute("cx", X(p.t)); dots[i].setAttribute("cy", Ys(i, p.v)); dots[i].setAttribute("fill", col(c));
         const val = cfg.zero ? sign(p.v) + Math.abs(p.v).toFixed(2) + " pp" : p.v.toFixed(s.f) + "%";
         const note = cfg.zero ? (p.v < 0 ? "inverted" : "normal") : s.monthly ? fmt(p.t, { month: "short" }) : "";
         rows += `<div><i style="--c:${col(c)}"></i>${s.name}${note ? ` <em>${note}</em>` : ""}<span>${val}</span></div>`;
@@ -459,25 +650,103 @@ const D = {"asof":"2026-09-18","y10":[["2019-01-04",2.67],["2019-01-11",2.71],["
   }
 
   const charts = [
-    ["c1", { id: "k1", series: [S.y10, S.y2, S.ff], h: w => Math.round(Math.min(380, Math.max(240, w * 0.34))),
+    ["c1", { id: "k1", splittable: true, k: 0, series: [S.y10, S.y2, S.ff], h: w => Math.round(Math.min(380, Math.max(240, w * 0.34))),
       aria: "Line chart of the US 10-year and 2-year Treasury yields and the fed funds rate. The same data is in the table below." }],
     ["c2", { id: "k2", series: [S.spread], zero: true, h: w => Math.round(Math.min(300, Math.max(220, w * 0.5))),
       aria: "Area chart of the 10-year minus 2-year Treasury yield spread, with negative values shown in red. The same data is in the table below." }],
     ["c3", { id: "k3", series: [S.cpi, S.un], h: w => Math.round(Math.min(300, Math.max(220, w * 0.5))),
       aria: "Line chart of US CPI inflation year over year and the unemployment rate. The same data is in the table below." }]
   ];
+  charts.forEach(([, cfg]) => { cfg.view = viewFor(cfg, state.years); });
   const render = () => charts.forEach(([id, cfg]) => draw($(id), cfg));
 
+  /* Range change: tween the first date and the y extent together, so the lines slide and rescale instead of jumping. */
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
+  const lerp = (a, b, k) => a + (b - a) * k;
+  const ease = k => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
+  let raf = 0;
+  function setRange(years) {
+    state.years = years;
+    cancelAnimationFrame(raf);
+    const from = charts.map(([, c]) => ({ ...c.view })), to = charts.map(([, c]) => viewFor(c, years));
+    if (reduceMotion.matches) { charts.forEach(([, c], i) => { c.view = to[i]; }); render(); return; }
+    let t0 = null;
+    const dur = 750;
+    const frame = now => {
+      if (t0 === null) t0 = now;
+      const k = ease(Math.max(0, Math.min(1, (now - t0) / dur)));
+      charts.forEach(([, c], i) => {
+        c.view = { tMin: lerp(from[i].tMin, to[i].tMin, k), y0: lerp(from[i].y0, to[i].y0, k), y1: lerp(from[i].y1, to[i].y1, k) };
+      });
+      render();
+      if (k < 1) raf = requestAnimationFrame(frame);
+    };
+    raf = requestAnimationFrame(frame);
+  }
   $("range").addEventListener("click", e => {
     const b = e.target.closest("button");
     if (!b) return;
-    state.years = +b.dataset.y;
     $("range").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
-    render();
+    setRange(+b.dataset.y);
   });
+
+  /* Exploded view: pull the overlaid lines apart into lanes, each with its own scale, and back. */
+  const explodeBtn = $("explode"), c1 = charts[0][1];
+  let kraf = 0;
+  explodeBtn.addEventListener("click", () => {
+    const on = explodeBtn.getAttribute("aria-pressed") !== "true";
+    explodeBtn.setAttribute("aria-pressed", String(on));
+    explodeBtn.textContent = on ? "Collapse" : "Explode";
+    cancelAnimationFrame(kraf);
+    const from = c1.k, to = on ? 1 : 0;
+    if (reduceMotion.matches) { c1.k = to; render(); return; }
+    let t0 = null;
+    const dur = 900;
+    const frame = now => {
+      if (t0 === null) t0 = now;
+      const p = ease(Math.max(0, Math.min(1, (now - t0) / dur)));
+      c1.k = lerp(from, to, p);
+      render();
+      if (p < 1) kraf = requestAnimationFrame(frame);
+    };
+    kraf = requestAnimationFrame(frame);
+  });
+
+  /* Themes, shared with the front page through localStorage */
+  const NAMES = ["desk", "ink", "ledger", "terminal", "pink", "weekly", "phosphor", "blueprint"];
+  const root = document.documentElement, select = $("theme-select"), swatch = $("swatch"), themeColor = $("theme-color");
+  function setTheme(name, save) {
+    if (!NAMES.includes(name)) name = "desk";
+    root.dataset.look = name;
+    select.value = name;
+    swatch.style.setProperty("--sw-bg", css("--page"));
+    swatch.style.setProperty("--sw-ac", css("--accent"));
+    themeColor.content = css("--page");
+    if (save) { try { localStorage.setItem("theme", name); } catch {} }
+    render();   // chart colours are read at draw time
+  }
+  select.addEventListener("change", () => setTheme(select.value, true));
+  matchMedia("(prefers-color-scheme: light)").addEventListener("change", () => setTheme(root.dataset.look));
   new ResizeObserver(render).observe(document.querySelector(".wrap"));
-  matchMedia("(prefers-color-scheme: light)").addEventListener("change", render);
-  render();
+  setTheme((() => { try { return location.hash.slice(1) || localStorage.getItem("theme"); } catch { return null; } })(), false);
+
+  /* Table: open and close by animating the height of the content */
+  const det = document.querySelector("details"), fold = det.querySelector(".fold");
+  let foldAnim = null;
+  det.querySelector("summary").addEventListener("click", e => {
+    e.preventDefault();
+    const opening = !det.classList.contains("is-open");
+    const from = det.open ? fold.getBoundingClientRect().height : 0;
+    if (foldAnim) foldAnim.cancel();
+    det.classList.toggle("is-open", opening);
+    if (opening) det.open = true;
+    if (reduceMotion.matches) { det.open = opening; foldAnim = null; return; }
+    const to = opening ? fold.scrollHeight : 0;
+    const a = foldAnim = fold.animate(
+      [{ height: from + "px", opacity: opening ? 0.3 : 1 }, { height: to + "px", opacity: opening ? 1 : 0 }],
+      { duration: opening ? 460 : 340, easing: "cubic-bezier(0.2, 0.7, 0.2, 1)", fill: "forwards" });
+    a.onfinish = () => { if (foldAnim === a) { foldAnim = null; if (!opening) det.open = false; a.cancel(); } };
+  });
 
   /* Table of the last 12 months */
   const months = D.un.slice(-12).map(p => p.t);
