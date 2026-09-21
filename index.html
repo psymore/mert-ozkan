@@ -122,6 +122,14 @@
     cursor: pointer;
     transition: color 0.2s ease, border-color 0.2s ease;
   }
+  .themes a {
+    padding: 8px 0 8px 20px;
+    border-left: 1px solid var(--grid);
+    color: var(--muted);
+    font: 500 0.875rem var(--body);
+    text-decoration: none;
+  }
+  .themes a:hover { color: var(--text); }
   .themes button:hover { color: var(--text); }
   .themes button[aria-pressed="true"] { color: var(--text); border-bottom-color: var(--gold); }
   .themes i {
@@ -288,6 +296,7 @@
       <button type="button" data-look="ink" aria-pressed="true" style="--sw-bg:#0c1929;--sw-ac:#e8b24a"><i></i>Ink</button>
       <button type="button" data-look="ledger" aria-pressed="false" style="--sw-bg:#edf0ee;--sw-ac:#2540d9"><i></i>Ledger</button>
       <button type="button" data-look="terminal" aria-pressed="false" style="--sw-bg:#0b0c0c;--sw-ac:#ffa028"><i></i>Terminal</button>
+      <a href="desk.html">Data desk</a>
     </nav>
     <h1>Mert Özkan</h1>
     <p class="intro">I follow the economy closely: interest rates, inflation, jobs and currencies, and what they mean for markets. If you want to talk it through, write to me.</p>
