@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#0c1929" id="theme-color">
+<title>Mert Özkan</title>
+<meta name="description" content="Mert Özkan follows economic trends and what they mean for markets. Write to mert.ozkan@example.com.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..600;1,6..96,400..600&family=Hanken+Grotesk:wght@400;500&family=Schibsted+Grotesk:wght@400..700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c1929;
+    --grid: #1d3149;
+    --text: #e7ecf3;
+    --muted: #8b9cb2;
+    --gold: #e8b24a;
+    --blue: #7da2d3;
+    --teal: #66b5a8;
+    --lilac: #b4a4d6;
+    --gutter: clamp(20px, 5vw, 64px);
+
+    /* Type and line character, overridden per theme */
+    --body: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --display: "Bodoni Moda", Didot, "Bodoni 72", Georgia, serif;
+    --name-size: clamp(3rem, 13vw, 10rem);
+    --name-weight: 400;
+    --name-tracking: -0.03em;
+    --name-opsz: "opsz" 96;
+    --email-size: clamp(1.5rem, 3.4vw, 2.75rem);
+    --email-style: italic;
+    --email-weight: 400;
+    --email-tracking: -0.01em;
+    --line-w: 1.5px;
+    --line-w-main: 2.5px;
+    --grid-dash: none;
+  }
+
+  /* Ledger: pale stone paper, grotesk type, cobalt signal line */
+  :root[data-look="ledger"] {
+    --bg: #edf0ee;
+    --grid: #d2d9d6;
+    --text: #0f1e1b;
+    --muted: #52625c;
+    --gold: #2540d9;
+    --blue: #7e5f45;
+    --teal: #1f7466;
+    --lilac: #74468a;
+    --display: "Schibsted Grotesk", "Hanken Grotesk", system-ui, sans-serif;
+    --name-size: clamp(3rem, 12.5vw, 9.5rem);
+    --name-weight: 600;
+    --name-tracking: -0.05em;
+    --name-opsz: normal;
+    --email-size: clamp(1.4rem, 3vw, 2.4rem);
+    --email-style: normal;
+    --email-weight: 500;
+    --email-tracking: -0.025em;
+    --line-w: 1.5px;
+    --line-w-main: 3px;
+  }
+
+  /* Terminal: black screen, amber signal, monospace, sharp straight segments */
+  :root[data-look="terminal"] {
+    --bg: #0b0c0c;
+    --grid: #262723;
+    --text: #e8e6df;
+    --muted: #8f8d83;
+    --gold: #ffa028;
+    --blue: #4db8d6;
+    --teal: #6dbe7b;
+    --lilac: #e0708c;
+    --body: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --display: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --name-size: clamp(2.4rem, 10vw, 8rem);
+    --name-weight: 500;
+    --name-tracking: -0.05em;
+    --name-opsz: normal;
+    --email-size: clamp(1rem, 2.4vw, 1.9rem);
+    --email-style: normal;
+    --email-weight: 500;
+    --email-tracking: -0.02em;
+    --line-w: 1.25px;
+    --line-w-main: 2px;
+    --grid-dash: 2 5;
+  }
+
+  * { box-sizing: border-box; }
+  html { background: var(--bg); transition: background-color 0.4s ease; }
+  body {
+    margin: 0;
+    min-height: 100svh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+
+  header {
+    padding: clamp(16px, 3vh, 28px) var(--gutter) 0;
+  }
+  .themes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 4px 20px;
+    margin-bottom: clamp(12px, 3vh, 32px);
+  }
+  .themes button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+    background: none;
+    border: 0;
+    border-bottom: 1px solid transparent;
+    color: var(--muted);
+    font: 500 0.875rem var(--body);
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  .themes button:hover { color: var(--text); }
+  .themes button[aria-pressed="true"] { color: var(--text); border-bottom-color: var(--gold); }
+  .themes i {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--sw-bg);
+    box-shadow: inset 0 0 0 1px var(--muted), inset 0 0 0 4px var(--sw-bg), inset 0 0 0 14px var(--sw-ac);
+  }
+  h1 {
+    margin: 0;
+    font-family: var(--display);
+    font-weight: var(--name-weight);
+    font-size: var(--name-size);
+    line-height: 0.95;
+    letter-spacing: var(--name-tracking);
+    font-optical-sizing: auto;
+    font-variation-settings: var(--name-opsz);
+  }
+  .intro {
+    margin: clamp(18px, 3vh, 32px) 0 0;
+    max-width: 34rem;
+    font-size: clamp(1rem, 1.3vw, 1.15rem);
+    line-height: 1.65;
+    color: var(--muted);
+  }
+
+  .chart {
+    position: relative;
+    min-height: 340px;
+    margin-top: clamp(12px, 3vh, 32px);
+  }
+  .chart svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .gridline { stroke: var(--grid); stroke-width: 1; stroke-dasharray: var(--grid-dash); }
+  .tick { stroke: var(--grid); stroke-width: 1; }
+  .tick-label {
+    fill: var(--muted);
+    font: 400 12px var(--body);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .series {
+    transition: opacity 0.3s ease;
+  }
+  .series path {
+    fill: none;
+    stroke-width: var(--line-w);
+    stroke-linejoin: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: draw 2.4s cubic-bezier(0.55, 0.05, 0.2, 1) forwards;
+    animation-delay: var(--delay);
+  }
+  .series.gold path { stroke-width: var(--line-w-main); animation-duration: 2.7s; }
+  .series-label {
+    font: 500 12px var(--body);
+    text-anchor: end;
+    paint-order: stroke;
+    stroke: var(--bg);
+    stroke-width: 4px;
+    stroke-linejoin: round;
+    opacity: 0;
+    animation: fade 0.8s ease forwards;
+    animation-delay: 2s;
+  }
+  .chart.dim .series:not(.hot) { opacity: 0.22; }
+
+  .now-dot { fill: var(--gold); opacity: 0; animation: fade 0.4s ease forwards 2.9s; }
+  .now-ring {
+    fill: none;
+    stroke: var(--gold);
+    stroke-width: 1.5;
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: ring 1.6s ease-out forwards 2.9s;
+  }
+
+  .contact {
+    position: absolute;
+    right: var(--gutter);
+    text-align: right;
+    opacity: 0;
+    animation: rise 0.9s ease forwards 2.9s;
+  }
+  .email {
+    display: inline-block;
+    font-family: var(--display);
+    font-style: var(--email-style);
+    font-weight: var(--email-weight);
+    font-size: var(--email-size);
+    line-height: 1.15;
+    letter-spacing: var(--email-tracking);
+    color: var(--text);
+    text-decoration: underline;
+    text-decoration-color: var(--gold);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+    text-shadow: 0 0 12px var(--bg), 0 0 4px var(--bg);
+    transition: text-decoration-thickness 0.2s ease, color 0.2s ease;
+  }
+  .email:hover { color: var(--gold); text-decoration-thickness: 2px; }
+  .copy {
+    display: block;
+    margin: 10px 0 0 auto;
+    padding: 6px 0;
+    background: none;
+    border: 0;
+    color: var(--muted);
+    font: 500 0.875rem var(--body);
+    cursor: pointer;
+    text-shadow: 0 0 8px var(--bg);
+  }
+  .copy:hover { color: var(--text); }
+
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+
+  footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 6px 24px;
+    padding: 4px var(--gutter) clamp(20px, 3.5vh, 32px);
+    color: var(--muted);
+    font-size: 0.8125rem;
+  }
+
+  /* Briefly switches animations off so a theme change can replay the reveal */
+  .replay, .replay * { animation: none !important; }
+
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  @keyframes fade { to { opacity: 1; } }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes ring {
+    0% { opacity: 0.9; transform: scale(1); }
+    100% { opacity: 0; transform: scale(4.5); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .series path { animation: none; stroke-dashoffset: 0; }
+    .series-label, .now-dot, .contact { animation: none; opacity: 1; }
+    .now-ring { animation: none; opacity: 0; }
+    .series, .email { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <nav class="themes" id="themes" aria-label="Theme">
+      <button type="button" data-look="ink" aria-pressed="true" style="--sw-bg:#0c1929;--sw-ac:#e8b24a"><i></i>Ink</button>
+      <button type="button" data-look="ledger" aria-pressed="false" style="--sw-bg:#edf0ee;--sw-ac:#2540d9"><i></i>Ledger</button>
+      <button type="button" data-look="terminal" aria-pressed="false" style="--sw-bg:#0b0c0c;--sw-ac:#ffa028"><i></i>Terminal</button>
+    </nav>
+    <h1>Mert Özkan</h1>
+    <p class="intro">I follow the economy closely: interest rates, inflation, jobs and currencies, and what they mean for markets. If you want to talk it through, write to me.</p>
+  </header>
+
+  <main class="chart" id="chart">
+    <svg id="svg" aria-hidden="true" focusable="false"></svg>
+    <div class="contact" id="contact">
+      <a class="email" href="mailto:mert.ozkan@example.com">mert.ozkan@example.com</a>
+      <button class="copy" id="copy" type="button">Copy address</button>
+      <span class="sr-only" id="status" role="status" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"></span>
+    </div>
+  </main>
+
+  <footer>
+    <span>© 2026 Mert Özkan</span>
+    <span>The lines are illustrative, not market data.</span>
+  </footer>
+
+<script>
+(() => {
+  const NS = "http://www.w3.org/2000/svg";
+  const chart = document.getElementById("chart");
+  const svg = document.getElementById("svg");
+  const contact = document.getElementById("contact");
+  const N = 93;                     // months, Jan 2019 to Sep 2026 (drives the year ticks)
+  const K = 26;                     // control points per line, so the curves stay calm
+  const START_YEAR = 2019;
+
+  function rng(seed) {
+    return () => {
+      seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
+      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+
+  // Each series is a mean-reverting walk, scaled into [lo, hi] and steered to a fixed end level.
+  function makeSeries(seed, lo, hi, end) {
+    const r = rng(seed);
+    let v = 0, raw = [];
+    for (let i = 0; i < K; i++) { v += (r() - 0.5) * 0.9 - v * 0.1; raw.push(v); }
+    const min = Math.min(...raw), max = Math.max(...raw);
+    return raw.map((n, i) => {
+      const x = i / (K - 1);
+      let y = lo + ((n - min) / (max - min)) * (hi - lo);
+      y += Math.max(0, 0.44 - y) * smooth(0.45, 0.6, x) * (end > 0.4 ? 1 : 0); // keep right side clear for the email
+      return y * (1 - smooth(0.62, 1, x)) + end * smooth(0.62, 1, x);
+    });
+  }
+
+  const series = [
+    { name: "Inflation",  color: "var(--blue)",  data: makeSeries(11, 0.25, 0.95, 0.56), delay: 0 },
+    { name: "Employment", color: "var(--teal)",  data: makeSeries(29, 0.3, 0.95, 0.70),  delay: 0.15 },
+    { name: "Currencies", color: "var(--lilac)", data: makeSeries(47, 0.2, 0.95, 0.84),  delay: 0.3 },
+    { name: "",           color: "var(--gold)",  data: makeSeries(83, 0.5, 0.95, 0.38),  delay: 0.5, gold: true }
+  ];
+
+  function el(name, attrs, parent) {
+    const e = document.createElementNS(NS, name);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+
+  // Catmull-Rom spline converted to cubic Béziers, or straight segments for the Terminal theme.
+  function pathFrom(pts) {
+    if (shape === "linear") return "M" + pts.map(p => p[0].toFixed(1) + "," + p[1].toFixed(1)).join("L");
+    let d = `M${pts[0][0]},${pts[0][1]}`;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+      const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+      const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+      d += `C${c1[0].toFixed(1)},${c1[1].toFixed(1)} ${c2[0].toFixed(1)},${c2[1].toFixed(1)} ${p2[0].toFixed(1)},${p2[1].toFixed(1)}`;
+    }
+    return d;
+  }
+
+  // Build static structure once; geometry is applied in layout().
+  const gridG = el("g", {}, svg);
+  const tickG = el("g", {}, svg);
+  const els = series.map(s => {
+    const g = el("g", { class: "series" + (s.gold ? " gold" : "") }, svg);
+    g.style.setProperty("--delay", s.delay + "s");
+    const p = el("path", { pathLength: 1, stroke: s.color }, g);
+    const label = s.name ? el("text", { class: "series-label", fill: s.color }, g) : null;
+    if (label) label.textContent = s.name;
+    return { g, p, label };
+  });
+  const ring = el("circle", { class: "now-ring", r: 5 }, svg);
+  const dot = el("circle", { class: "now-dot", r: 5 }, svg);
+
+  let geo = [];
+  let shape = "smooth";
+
+  function layout() {
+    const W = chart.clientWidth, H = chart.clientHeight;
+    const g = Math.max(20, Math.min(64, window.innerWidth * 0.05));
+    const top = 8, bottom = H - 34;
+    const x0 = g, x1 = W - g;
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+
+    gridG.replaceChildren();
+    for (let i = 0; i <= 4; i++) {
+      const y = top + (bottom - top) * (i / 4);
+      el("line", { class: "gridline", x1: 0, x2: W, y1: y, y2: y }, gridG);
+    }
+
+    tickG.replaceChildren();
+    for (let k = 0; k * 12 < N; k++) {
+      const x = x0 + (x1 - x0) * (k * 12) / (N - 1);
+      el("line", { class: "tick", x1: x, x2: x, y1: bottom, y2: bottom + 6 }, tickG);
+      const t = el("text", { class: "tick-label", x: x + 4, y: bottom + 22 }, tickG);
+      t.textContent = START_YEAR + k;
+    }
+
+    geo = series.map((s, i) => {
+      const pts = s.data.map((v, j) => [x0 + (x1 - x0) * j / (K - 1), top + v * (bottom - top - 8)]);
+      els[i].p.setAttribute("d", pathFrom(pts));
+      const end = pts[pts.length - 1];
+      if (els[i].label) { els[i].label.setAttribute("x", end[0]); els[i].label.setAttribute("y", end[1] - 12); }
+      return pts;
+    });
+
+    const gold = geo[geo.length - 1], end = gold[gold.length - 1];
+    for (const c of [dot, ring]) { c.setAttribute("cx", end[0]); c.setAttribute("cy", end[1]); }
+    contact.style.bottom = (H - end[1] + 20) + "px";
+  }
+
+  // Dim the other lines when the pointer is near one of them.
+  chart.addEventListener("pointermove", e => {
+    if (e.target.closest(".contact")) return clear();
+    const box = svg.getBoundingClientRect();
+    const px = e.clientX - box.left, py = e.clientY - box.top;
+    let best = -1, bestD = 26;
+    geo.forEach((pts, i) => {
+      let j = 0;
+      while (j < pts.length - 2 && pts[j + 1][0] < px) j++;
+      const a = pts[j], b = pts[j + 1];
+      const t = Math.min(1, Math.max(0, (px - a[0]) / (b[0] - a[0])));
+      const d = Math.abs(a[1] + (b[1] - a[1]) * t - py);
+      if (d < bestD) { bestD = d; best = i; }
+    });
+    els.forEach((o, i) => o.g.classList.toggle("hot", i === best));
+    chart.classList.toggle("dim", best >= 0);
+  });
+  function clear() { chart.classList.remove("dim"); els.forEach(o => o.g.classList.remove("hot")); }
+  chart.addEventListener("pointerleave", clear);
+
+  new ResizeObserver(layout).observe(chart);
+  layout();
+
+  // Themes
+  const THEMES = {
+    ink:      { shape: "smooth", color: "#0c1929" },
+    ledger:   { shape: "smooth", color: "#edf0ee" },
+    terminal: { shape: "linear", color: "#0b0c0c" }
+  };
+  const root = document.documentElement;
+  const buttons = [...document.querySelectorAll("#themes button")];
+  const themeColor = document.getElementById("theme-color");
+  const saved = (() => { try { return localStorage.getItem("theme"); } catch { return null; } })();
+
+  function setTheme(name, replay) {
+    if (!THEMES[name]) name = "ink";
+    root.dataset.look = name;
+    root.style.colorScheme = name === "ledger" ? "light" : "dark";
+    if (themeColor) themeColor.content = THEMES[name].color;
+    shape = THEMES[name].shape;
+    buttons.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.look === name)));
+    layout();
+    if (replay) {
+      chart.classList.add("replay");
+      void chart.offsetWidth;
+      chart.classList.remove("replay");
+    }
+  }
+  buttons.forEach(b => b.addEventListener("click", () => {
+    setTheme(b.dataset.look, true);
+    try { localStorage.setItem("theme", b.dataset.look); } catch {}
+  }));
+  setTheme(location.hash.slice(1) || saved || "ink", false);
+
+  // Copy address
+  const copyBtn = document.getElementById("copy");
+  const status = document.getElementById("status");
+  const address = "mert.ozkan@example.com";
+  let timer;
+  copyBtn.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(address);
+    } catch {
+      const t = document.createElement("textarea");
+      t.value = address; document.body.appendChild(t); t.select();
+      try { document.execCommand("copy"); } finally { t.remove(); }
+    }
+    copyBtn.textContent = "Copied";
+    status.textContent = "Email address copied";
+    clearTimeout(timer);
+    timer = setTimeout(() => { copyBtn.textContent = "Copy address"; status.textContent = ""; }, 2000);
+  });
+})();
+</script>
+</body>
+</html>
