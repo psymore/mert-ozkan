@@ -210,9 +210,11 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
+    text-shadow: 0 0 10px color-mix(in srgb, var(--accent) 70%, transparent);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent), 0 0 16px color-mix(in srgb, var(--accent) 45%, transparent), 0 0 34px color-mix(in srgb, var(--accent) 25%, transparent);
   }
   .soon.show { opacity: 1; }
-  .soon.first { animation: soon-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  .soon.first { animation: soon-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both, soon-glow 1.8s ease-out both; }
   .soon.first::after {
     content: "";
     position: absolute;
@@ -224,7 +226,12 @@
     transform-origin: left;
     animation: soon-line 0.9s 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
-  @keyframes soon-in { from { clip-path: inset(0 100% 0 0); transform: translateY(-5px); } to { clip-path: inset(0); transform: none; } }
+  @keyframes soon-in { from { clip-path: inset(-44px 100% -44px 0); transform: translateY(-5px); } to { clip-path: inset(-44px); transform: none; } }
+  @keyframes soon-glow {
+    0% { box-shadow: 0 0 0 0 transparent; }
+    35% { box-shadow: 0 0 0 1px var(--accent), 0 0 22px 2px color-mix(in srgb, var(--accent) 65%, transparent), 0 0 54px 8px color-mix(in srgb, var(--accent) 38%, transparent); }
+    100% { box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent), 0 0 16px color-mix(in srgb, var(--accent) 45%, transparent), 0 0 34px color-mix(in srgb, var(--accent) 25%, transparent); }
+  }
   @keyframes soon-line { from { transform: scaleX(0); } to { transform: scaleX(1); } }
   .pick { position: relative; display: inline-flex; align-items: center; }
   .pick select {
@@ -423,6 +430,7 @@
         </select>
       </label>
       <a class="back" href="./">Original page</a>
+      <a class="back" href="lab.html">Lab</a>
       <a class="back" href="card.html">Card</a>
       <span id="status" role="status" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"></span>
     </div>
@@ -807,16 +815,14 @@ const D = {"asof":"2026-09-18","y10":[["2019-01-04",2.67],["2019-01-11",2.71],["
 
   /* Country switch: US is what the data is; TR is not built yet, so it answers with a note that animates the first time */
   const trBtn = document.getElementById("tr"), soon = document.getElementById("soon");
-  let soonSeen = false, soonTimer;
+  let soonTimer;
   trBtn.addEventListener("click", () => {
     clearTimeout(soonTimer);
     soon.classList.remove("show", "first");
     void soon.offsetWidth;
     soon.textContent = "Coming soon";
-    if (!soonSeen) soon.classList.add("first");
-    soonSeen = true;
-    soon.classList.add("show");
-    soonTimer = setTimeout(() => { soon.classList.remove("show"); soon.textContent = ""; }, 2800);
+    soon.classList.add("first", "show");   // the whole animation plays on every press
+    soonTimer = setTimeout(() => { soon.classList.remove("show"); soon.textContent = ""; }, 3200);
   });
 
   /* Copy address */

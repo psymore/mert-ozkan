@@ -198,13 +198,78 @@
   header {
     padding: clamp(16px, 3vh, 28px) var(--gutter) 0;
   }
-  .themes {
-    display: flex;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    gap: 4px 20px;
-    margin-bottom: clamp(12px, 3vh, 32px);
+  /* Name on the left, one Settings button on the same line at the right */
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .gear {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: none;
+    border: 1px solid var(--grid);
+    color: var(--muted);
+    font: 500 0.875rem var(--body);
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease;
   }
+  .gear:hover { color: var(--text); border-color: var(--muted); }
+  .gear svg { width: 17px; height: 17px; }
+
+  /* Settings sheet */
+  dialog.settings {
+    width: min(440px, calc(100vw - 32px));
+    max-height: calc(100svh - 32px);
+    margin: auto;
+    padding: 0;
+    overflow: auto;
+    background: color-mix(in srgb, var(--text) 5%, var(--bg));
+    color: var(--text);
+    border: 1px solid var(--grid);
+    font-family: var(--body);
+    box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.6);
+  }
+  dialog.settings::backdrop { background: rgba(0, 0, 0, 0.55); backdrop-filter: blur(5px); }
+  dialog.settings[open] { animation: sheet-in 0.38s cubic-bezier(0.2, 0.7, 0.2, 1); }
+  dialog.settings[open]::backdrop { animation: veil-in 0.3s ease; }
+  dialog.settings.closing { animation: sheet-out 0.24s ease-in forwards; }
+  dialog.settings.closing::backdrop { animation: veil-out 0.24s ease-in forwards; }
+  @keyframes sheet-in { from { opacity: 0; transform: translateY(14px) scale(0.98); } }
+  @keyframes sheet-out { to { opacity: 0; transform: translateY(8px) scale(0.985); } }
+  @keyframes veil-in { from { opacity: 0; } }
+  @keyframes veil-out { to { opacity: 0; } }
+  .sheet { display: grid; gap: 22px; padding: 22px 24px 26px; }
+  .sheet-head { display: flex; align-items: center; justify-content: space-between; }
+  .sheet h2 { margin: 0; font: 600 1.125rem var(--body); letter-spacing: -0.01em; }
+  .sheet h3 { margin: 0 0 10px; color: var(--muted); font: 500 0.8125rem var(--body); }
+  .sheet .x {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    background: none;
+    border: 1px solid var(--grid);
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .sheet .x:hover { color: var(--text); border-color: var(--muted); }
+  .sheet .x svg { width: 14px; height: 14px; }
+  .row { display: flex; align-items: center; gap: 14px; min-height: 40px; }
+  .pages { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--grid); }
+  .pages a {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--grid);
+    color: var(--text);
+    text-decoration: none;
+    transition: color 0.2s ease, padding 0.25s ease;
+  }
+  .pages a:hover { color: var(--gold); padding-left: 6px; }
+  .pages b { font-weight: 600; }
+  .pages span { color: var(--muted); font-size: 0.8125rem; text-align: right; }
   .country { position: relative; display: inline-flex; border: 1px solid var(--grid); }
   .country button {
     padding: 8px 14px;
@@ -218,10 +283,7 @@
   .country button:hover { color: var(--text); }
   .country button[aria-pressed="true"] { color: var(--text); box-shadow: inset 0 -2px 0 var(--gold); }
   .soon {
-    position: absolute;
-    top: calc(100% + 8px);
-    left: 0;
-    z-index: 3;
+    position: relative;
     padding: 6px 12px;
     background: var(--bg);
     border: 1px solid var(--gold);
@@ -231,9 +293,11 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
+    text-shadow: 0 0 10px color-mix(in srgb, var(--gold) 70%, transparent);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 55%, transparent), 0 0 16px color-mix(in srgb, var(--gold) 45%, transparent), 0 0 34px color-mix(in srgb, var(--gold) 25%, transparent);
   }
   .soon.show { opacity: 1; }
-  .soon.first { animation: soon-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  .soon.first { animation: soon-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both, soon-glow 1.8s ease-out both; }
   .soon.first::after {
     content: "";
     position: absolute;
@@ -245,9 +309,13 @@
     transform-origin: left;
     animation: soon-line 0.9s 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
-  @keyframes soon-in { from { clip-path: inset(0 100% 0 0); transform: translateY(-5px); } to { clip-path: inset(0); transform: none; } }
+  @keyframes soon-in { from { clip-path: inset(-44px 100% -44px 0); transform: translateY(-5px); } to { clip-path: inset(-44px); transform: none; } }
+  @keyframes soon-glow {
+    0% { box-shadow: 0 0 0 0 transparent; }
+    35% { box-shadow: 0 0 0 1px var(--gold), 0 0 22px 2px color-mix(in srgb, var(--gold) 65%, transparent), 0 0 54px 8px color-mix(in srgb, var(--gold) 38%, transparent); }
+    100% { box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 55%, transparent), 0 0 16px color-mix(in srgb, var(--gold) 45%, transparent), 0 0 34px color-mix(in srgb, var(--gold) 25%, transparent); }
+  }
   @keyframes soon-line { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-  .themes { align-items: center; }
   .pick { position: relative; display: inline-flex; align-items: center; }
   .pick select {
     appearance: none;
@@ -276,15 +344,7 @@
     transform: translateY(-70%) rotate(45deg);
     pointer-events: none;
   }
-  .themes a {
-    padding: 8px 0 8px 20px;
-    border-left: 1px solid var(--grid);
-    color: var(--muted);
-    font: 500 0.875rem var(--body);
-    text-decoration: none;
-  }
-  .themes a:hover { color: var(--text); }
-  .themes i {
+  .pick i {
     width: 14px;
     height: 14px;
     border-radius: 50%;
@@ -468,31 +528,60 @@
 </head>
 <body>
   <header>
-    <nav class="themes" id="themes" aria-label="Theme">
-      <div class="country" role="group" aria-label="Country">
-        <button type="button" id="us" aria-pressed="true">US</button>
-        <button type="button" id="tr" aria-pressed="false" aria-describedby="soon">TR</button>
-        <span class="soon" id="soon" role="status"></span>
-      </div>
-      <label class="pick" for="theme-select">
-        <span class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Theme</span>
-        <i id="swatch"></i>
-        <select id="theme-select">
-          <option value="ink">Ink</option>
-          <option value="ledger">Ledger</option>
-          <option value="terminal">Terminal</option>
-          <option value="pink">Pink paper</option>
-          <option value="weekly">Weekly</option>
-          <option value="phosphor">Phosphor</option>
-          <option value="blueprint">Blueprint</option>
-        </select>
-      </label>
-      <a href="desk.html">Data desk</a>
-      <a href="card.html">Card</a>
-    </nav>
-    <h1>Mert Özkan</h1>
+    <div class="bar">
+      <h1>Mert Özkan</h1>
+      <button type="button" class="gear" id="open-settings" aria-haspopup="dialog">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h9M19 7h1M4 17h1M11 17h9"/><circle cx="16" cy="7" r="2.4"/><circle cx="8" cy="17" r="2.4"/></svg>
+        Settings
+      </button>
+    </div>
     <p class="intro">I follow the economy closely: interest rates, inflation, jobs and currencies, and what they mean for markets. If you want to talk it through, write to me.</p>
   </header>
+
+  <dialog class="settings" id="settings" aria-labelledby="settings-title">
+    <div class="sheet">
+      <div class="sheet-head">
+        <h2 id="settings-title">Settings</h2>
+        <button type="button" class="x" id="close-settings" aria-label="Close settings">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M2 2l10 10M12 2L2 12"/></svg>
+        </button>
+      </div>
+      <section aria-label="Country">
+        <h3>Country</h3>
+        <div class="row">
+          <div class="country" role="group" aria-label="Country">
+            <button type="button" id="us" aria-pressed="true">US</button>
+            <button type="button" id="tr" aria-pressed="false" aria-describedby="soon">TR</button>
+          </div>
+          <span class="soon" id="soon" role="status"></span>
+        </div>
+      </section>
+      <section aria-label="Theme">
+        <h3>Theme</h3>
+        <label class="pick" for="theme-select">
+          <span class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Theme</span>
+          <i id="swatch"></i>
+          <select id="theme-select">
+            <option value="ink">Ink</option>
+            <option value="ledger">Ledger</option>
+            <option value="terminal">Terminal</option>
+            <option value="pink">Pink paper</option>
+            <option value="weekly">Weekly</option>
+            <option value="phosphor">Phosphor</option>
+            <option value="blueprint">Blueprint</option>
+          </select>
+        </label>
+      </section>
+      <section aria-label="Pages">
+        <h3>Pages</h3>
+        <ul class="pages">
+          <li><a href="desk.html"><b>Data desk</b><span>US rates, inflation and jobs</span></a></li>
+          <li><a href="lab.html"><b>Lab</b><span>Three ways to see the yield curve</span></a></li>
+          <li><a href="card.html"><b>Card</b><span>Digital business card</span></a></li>
+        </ul>
+      </section>
+    </div>
+  </dialog>
 
   <main class="chart" id="chart">
     <svg id="svg" aria-hidden="true" focusable="false"></svg>
@@ -717,17 +806,36 @@
 
   /* Country switch: US is what the data is; TR is not built yet, so it answers with a note that animates the first time */
   const trBtn = document.getElementById("tr"), soon = document.getElementById("soon");
-  let soonSeen = false, soonTimer;
+  let soonTimer;
   trBtn.addEventListener("click", () => {
     clearTimeout(soonTimer);
     soon.classList.remove("show", "first");
     void soon.offsetWidth;
     soon.textContent = "Coming soon";
-    if (!soonSeen) soon.classList.add("first");
-    soonSeen = true;
-    soon.classList.add("show");
-    soonTimer = setTimeout(() => { soon.classList.remove("show"); soon.textContent = ""; }, 2800);
+    soon.classList.add("first", "show");   // the whole animation plays on every press
+    soonTimer = setTimeout(() => { soon.classList.remove("show"); soon.textContent = ""; }, 3200);
   });
+
+  // Settings sheet: opens and closes with a short animation
+  const dlg = document.getElementById("settings");
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
+  document.getElementById("open-settings").addEventListener("click", () => dlg.showModal());
+  function closeSheet() {
+    if (!dlg.open || dlg.classList.contains("closing")) return;
+    if (reduceMotion.matches) { dlg.close(); return; }
+    dlg.classList.add("closing");
+    let done = false;
+    dlg.addEventListener("animationend", function end(e) {
+      if (e.target !== dlg || done) return;
+      done = true;
+      dlg.removeEventListener("animationend", end);
+      dlg.classList.remove("closing");
+      dlg.close();
+    });
+  }
+  document.getElementById("close-settings").addEventListener("click", closeSheet);
+  dlg.addEventListener("cancel", e => { e.preventDefault(); closeSheet(); });
+  dlg.addEventListener("click", e => { if (e.target === dlg) closeSheet(); });
 })();
 </script>
 </body>

@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#0c1929" id="theme-color">
+<title>Mert Özkan</title>
+<meta name="description" content="Three ways to see the US yield curve: a double helix, exploded layers and a terrain. Real FRED data.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..600;1,6..96,400..600&family=Hanken+Grotesk:wght@400;500&family=Schibsted+Grotesk:wght@400..700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..600&family=Libre+Franklin:wght@400..800&family=JetBrains+Mono:wght@400..600&family=Archivo:wght@400..800&display=swap" rel="stylesheet">
+<script>try{var t=location.hash.slice(1)||localStorage.getItem("theme");if(t)document.documentElement.dataset.look=t}catch(e){}</script>
+<style>
+  :root {
+    --bg: #0c1929;
+    --grid: #1d3149;
+    --text: #e7ecf3;
+    --muted: #8b9cb2;
+    --gold: #e8b24a;
+    --blue: #7da2d3;
+    --teal: #66b5a8;
+    --lilac: #b4a4d6;
+    --gutter: clamp(20px, 5vw, 64px);
+
+    /* Type and line character, overridden per theme */
+    --body: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --display: "Bodoni Moda", Didot, "Bodoni 72", Georgia, serif;
+    --name-size: clamp(3rem, 13vw, 10rem);
+    --name-weight: 400;
+    --name-tracking: -0.03em;
+    --name-opsz: "opsz" 96;
+    --email-size: clamp(1.5rem, 3.4vw, 2.75rem);
+    --email-style: italic;
+    --email-weight: 400;
+    --email-tracking: -0.01em;
+    --line-w: 1.5px;
+    --line-w-main: 2.5px;
+    --grid-dash: none;
+  }
+
+  /* Ledger: pale stone paper, grotesk type, cobalt signal line */
+  :root[data-look="ledger"] {
+    --bg: #edf0ee;
+    --grid: #d2d9d6;
+    --text: #0f1e1b;
+    --muted: #52625c;
+    --gold: #2540d9;
+    --blue: #7e5f45;
+    --teal: #1f7466;
+    --lilac: #74468a;
+    --display: "Schibsted Grotesk", "Hanken Grotesk", system-ui, sans-serif;
+    --name-size: clamp(3rem, 12.5vw, 9.5rem);
+    --name-weight: 600;
+    --name-tracking: -0.05em;
+    --name-opsz: normal;
+    --email-size: clamp(1.4rem, 3vw, 2.4rem);
+    --email-style: normal;
+    --email-weight: 500;
+    --email-tracking: -0.025em;
+    --line-w: 1.5px;
+    --line-w-main: 3px;
+  }
+
+  /* Terminal: black screen, amber signal, monospace, sharp straight segments */
+  :root[data-look="terminal"] {
+    --bg: #0b0c0c;
+    --grid: #262723;
+    --text: #e8e6df;
+    --muted: #8f8d83;
+    --gold: #ffa028;
+    --blue: #4db8d6;
+    --teal: #6dbe7b;
+    --lilac: #e0708c;
+    --body: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --display: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --name-size: clamp(2.4rem, 10vw, 8rem);
+    --name-weight: 500;
+    --name-tracking: -0.05em;
+    --name-opsz: normal;
+    --email-size: clamp(1rem, 2.4vw, 1.9rem);
+    --email-style: normal;
+    --email-weight: 500;
+    --email-tracking: -0.02em;
+    --line-w: 1.25px;
+    --line-w-main: 2px;
+    --grid-dash: 2 5;
+  }
+
+  /* Pink paper: salmon newsprint, serif headline, claret signal (after the FT) */
+  :root[data-look="pink"] {
+    --bg: #fff1e5;
+    --grid: #ead9c9;
+    --text: #33302e;
+    --muted: #665f5a;
+    --gold: #990f3d;
+    --blue: #0f5499;
+    --teal: #0d7680;
+    --lilac: #593380;
+    --display: "Newsreader", Georgia, "Times New Roman", serif;
+    --name-size: clamp(3rem, 13vw, 10rem);
+    --name-weight: 500;
+    --name-tracking: -0.035em;
+    --name-opsz: "opsz" 72;
+    --email-size: clamp(1.5rem, 3.4vw, 2.75rem);
+    --email-style: italic;
+    --email-weight: 400;
+    --line-w: 1.5px;
+    --line-w-main: 2.75px;
+  }
+
+  /* Weekly: cool blue-grey chart paper, heavy sans, red signal, straight lines (after The Economist) */
+  :root[data-look="weekly"] {
+    --bg: #dde8ee;
+    --grid: #bccbd4;
+    --text: #0d1417;
+    --muted: #4a5a63;
+    --gold: #e3120b;
+    --blue: #006ba2;
+    --teal: #1f7a6d;
+    --lilac: #9a607f;
+    --display: "Libre Franklin", "Hanken Grotesk", system-ui, sans-serif;
+    --name-size: clamp(3rem, 12vw, 9.25rem);
+    --name-weight: 800;
+    --name-tracking: -0.055em;
+    --name-opsz: normal;
+    --email-size: clamp(1.4rem, 3vw, 2.4rem);
+    --email-style: normal;
+    --email-weight: 600;
+    --email-tracking: -0.03em;
+    --line-w: 1.75px;
+    --line-w-main: 3px;
+  }
+
+  /* Phosphor: green screen on black, straight segments, dotted grid (after the trading terminal) */
+  :root[data-look="phosphor"] {
+    --bg: #040b06;
+    --grid: #15281a;
+    --text: #c9f2d2;
+    --muted: #6f9a7b;
+    --gold: #3dff7a;
+    --blue: #4fd6c8;
+    --teal: #9bd15b;
+    --lilac: #ff6b6b;
+    --body: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --display: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --name-size: clamp(2.3rem, 9.5vw, 7.5rem);
+    --name-weight: 600;
+    --name-tracking: -0.06em;
+    --name-opsz: normal;
+    --email-size: clamp(1rem, 2.3vw, 1.8rem);
+    --email-style: normal;
+    --email-weight: 500;
+    --email-tracking: -0.03em;
+    --line-w: 1.25px;
+    --line-w-main: 2px;
+    --grid-dash: 1 5;
+  }
+
+  /* Blueprint: cobalt drafting sheet, white ink, yellow signal */
+  :root[data-look="blueprint"] {
+    --bg: #1436c9;
+    --grid: #3556da;
+    --text: #f3f6ff;
+    --muted: #bac7f7;
+    --gold: #ffd84d;
+    --blue: #ffffff;
+    --teal: #8fe3ff;
+    --lilac: #ffb3d1;
+    --display: "Archivo", "Hanken Grotesk", system-ui, sans-serif;
+    --name-size: clamp(3rem, 12.5vw, 9.5rem);
+    --name-weight: 700;
+    --name-tracking: -0.045em;
+    --name-opsz: normal;
+    --email-size: clamp(1.4rem, 3vw, 2.4rem);
+    --email-style: normal;
+    --email-weight: 600;
+    --email-tracking: -0.025em;
+    --line-w: 1.5px;
+    --line-w-main: 3px;
+    --grid-dash: 6 6;
+  }
+
+
+  /* Colour for "inverted" (a fall below zero), one per theme */
+  :root { --neg: #e8776b; }
+  :root[data-look="ledger"] { --neg: #c22f2f; }
+  :root[data-look="terminal"] { --neg: #ff5c4d; }
+  :root[data-look="pink"] { --neg: #990f3d; }
+  :root[data-look="weekly"] { --neg: #e3120b; }
+  :root[data-look="phosphor"] { --neg: #ff6b6b; }
+  :root[data-look="blueprint"] { --neg: #ffb3d1; }
+
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  body {
+    margin: 0;
+    min-height: 100svh;
+    display: grid;
+    grid-template-rows: auto minmax(520px, 1fr) auto;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+  header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 20px;
+    padding: clamp(14px, 2.5vh, 24px) var(--gutter) 0;
+  }
+  .home { color: var(--text); font: var(--name-weight) 1.35rem/1 var(--display); letter-spacing: var(--name-tracking); text-decoration: none; font-variation-settings: var(--name-opsz); }
+  .ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+  .pick { position: relative; display: inline-flex; align-items: center; }
+  .pick select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding: 8px 34px 8px 14px;
+    background: transparent;
+    border: 1px solid var(--grid);
+    border-radius: 0;
+    color: var(--text);
+    font: 500 0.875rem var(--body);
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+  }
+  .pick.sw select { padding-left: 38px; }
+  .pick select:hover { border-color: var(--muted); }
+  .pick select option { background: var(--bg); color: var(--text); }
+  .pick i {
+    position: absolute;
+    left: 12px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--sw-bg);
+    box-shadow: inset 0 0 0 1px var(--muted), inset 0 0 0 4px var(--sw-bg), inset 0 0 0 14px var(--sw-ac);
+    pointer-events: none;
+  }
+  .pick::after {
+    content: "";
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    border: solid var(--muted);
+    border-width: 0 1.5px 1.5px 0;
+    transform: translateY(-70%) rotate(45deg);
+    pointer-events: none;
+  }
+  .ctl a { color: var(--muted); font: 500 0.875rem var(--body); text-decoration: none; padding: 8px 0; }
+  .ctl a:hover { color: var(--text); }
+
+  /* Stage: three views stacked, one visible */
+  .stage { position: relative; min-height: 0; overflow: hidden; }
+  .view {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.45s ease, visibility 0.45s;
+  }
+  .view.on { opacity: 1; visibility: visible; }
+  .view canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
+  #v-terrain canvas, #v-layers .layers { cursor: grab; }
+  .hud {
+    position: absolute;
+    left: var(--gutter);
+    right: var(--gutter);
+    bottom: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px 24px;
+    pointer-events: none;
+  }
+  .hud > * { pointer-events: auto; }
+  .cap { margin: 0; max-width: 34rem; color: var(--muted); font-size: 0.8125rem; line-height: 1.5; }
+  .hud .row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+  .btn {
+    padding: 9px 16px;
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
+    border: 1px solid var(--grid);
+    color: var(--text);
+    font: 500 0.875rem var(--body);
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+  .btn:hover { border-color: var(--gold); color: var(--gold); }
+  .read { color: var(--text); font: 500 0.8125rem var(--body); font-variant-numeric: tabular-nums; }
+  .read span { color: var(--muted); }
+  .read.full { flex-basis: 100%; }
+  input[type="range"] { width: min(280px, 60vw); accent-color: var(--gold); }
+  .tip {
+    position: absolute;
+    z-index: 2;
+    padding: 8px 10px;
+    background: var(--bg);
+    border: 1px solid var(--grid);
+    color: var(--text);
+    font: 500 0.75rem var(--body);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.5;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    white-space: nowrap;
+  }
+  .tip.on { opacity: 1; }
+  .tip b { display: block; margin-bottom: 2px; color: var(--muted); font-weight: 500; }
+
+  /* Exploded layers, in CSS 3D */
+  .layers { position: absolute; inset: 0 0 60px; display: grid; place-items: center; perspective: 1800px; touch-action: none; }
+  .scene {
+    --gap: 14px;
+    --rx: 58deg;
+    --rz: -30deg;
+    position: relative;
+    width: min(720px, 80vw);
+    aspect-ratio: 3.2 / 1;
+    transform-style: preserve-3d;
+    transform: rotateX(var(--rx)) rotateZ(var(--rz));
+  }
+  .plane {
+    position: absolute;
+    inset: 0;
+    transform: translateZ(calc((var(--i) - 1.5) * var(--gap)));
+    background: color-mix(in srgb, var(--bg) 58%, transparent);
+    border: 1px solid color-mix(in srgb, var(--c) 60%, var(--grid));
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+  }
+  .plane:hover { background: color-mix(in srgb, var(--c) 12%, var(--bg)); border-color: var(--c); }
+  .plane svg { position: absolute; inset: 14% 5% 10% 5%; width: 90%; height: 76%; overflow: visible; }
+  .plane path { fill: none; stroke: var(--c); stroke-width: 2.4; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+  .plane .pn { position: absolute; left: 3.5%; top: 6%; color: var(--text); font: 600 clamp(0.7rem, 1.6vw, 1rem) var(--body); }
+  .plane .pv { position: absolute; right: 3.5%; top: 6%; color: var(--c); font: 600 clamp(0.7rem, 1.6vw, 1rem) var(--body); font-variant-numeric: tabular-nums; }
+  .plane .pd { position: absolute; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; background: var(--c); }
+  .spine {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 2px;
+    height: calc(3 * var(--gap));
+    background: var(--gold);
+    transform-origin: 0 0;
+    transform: translateZ(calc(-1.5 * var(--gap))) rotateX(90deg);
+    opacity: 0.8;
+  }
+
+  footer { padding: 6px var(--gutter) clamp(16px, 3vh, 28px); color: var(--muted); font-size: 0.75rem; line-height: 1.6; }
+  a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) { .view { transition: none; } }
+</style>
+</head>
+<body>
+  <header>
+    <a class="home" href="./">Mert Özkan</a>
+    <div class="ctl">
+      <label class="pick" for="view-select">
+        <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">View</span>
+        <select id="view-select">
+          <option value="helix">Helix</option>
+          <option value="layers">Layers</option>
+          <option value="terrain">Terrain</option>
+        </select>
+      </label>
+      <label class="pick sw" for="theme-select">
+        <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Theme</span>
+        <i id="swatch"></i>
+        <select id="theme-select">
+          <option value="ink">Ink</option>
+          <option value="ledger">Ledger</option>
+          <option value="terminal">Terminal</option>
+          <option value="pink">Pink paper</option>
+          <option value="weekly">Weekly</option>
+          <option value="phosphor">Phosphor</option>
+          <option value="blueprint">Blueprint</option>
+        </select>
+      </label>
+      <a href="./">Original page</a>
+    </div>
+  </header>
+
+  <main class="stage" id="stage">
+    <!-- 1. Double helix: 10-year and 2-year yields as two strands -->
+    <section class="view" id="v-helix" aria-label="Double helix of the 10-year and 2-year Treasury yields">
+      <canvas id="cv-helix" role="img" aria-label="Two twisting strands, the 10-year yield and the 2-year yield, joined by rungs. Rung length is the gap between them; highlighted rungs mark an inverted yield curve."></canvas>
+      <div class="tip" id="h-tip"></div>
+      <div class="hud">
+        <p class="cap">Two strands: the 10-year yield and the 2-year yield (labelled at the right). Each rung joins the two yields for one week; its length is the gap between them (magnified twofold while twisted). Highlighted rungs: the curve is inverted, the 2-year above the 10-year.</p>
+        <div class="row"><button class="btn" id="twist" type="button" aria-pressed="true">Untwist</button></div>
+      </div>
+    </section>
+
+    <!-- 2. Exploded layers: four series pulled apart in depth -->
+    <section class="view" id="v-layers" aria-label="Exploded layers of four US series">
+      <div class="layers" id="layers"><div class="scene" id="scene"></div></div>
+      <div class="hud">
+        <p class="cap">Four US series, each scaled to its own range, stacked in depth. A vertical line joins them at today. Drag to rotate.</p>
+        <div class="row"><button class="btn" id="explode" type="button" aria-pressed="true">Assemble</button></div>
+      </div>
+    </section>
+
+    <!-- 3. Terrain: the whole yield curve through time -->
+    <section class="view" id="v-terrain" aria-label="Terrain of the US Treasury yield curve over time">
+      <canvas id="cv-terrain" role="img" aria-label="A three-dimensional surface. One axis is maturity from 1 month to 30 years, the other is time from 2019 to 2026, and height is the yield."></canvas>
+      <div class="hud">
+        <div class="read full" id="t-read"></div>
+        <p class="cap">Height and colour: yield. One axis is maturity (1 month to 30 years), the other is time. Bluish bands: months when the 2-year yield was above the 10-year. Drag to rotate.</p>
+        <div class="row">
+          <label class="read" for="month"><span>Month</span></label>
+          <input type="range" id="month" min="0" max="92" value="92">
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>United States. Source: FRED, Federal Reserve Bank of St. Louis (DGS1MO to DGS30, CPIAUCSL, UNRATE, DTWEXBGS). Snapshot taken 22 Sep 2026. Layers: October 2025 CPI and jobs data were not published, so those lines bridge that month.</footer>
+
+<script>
+(() => {
+  const LAB = {"start":"2019-01","n":93,"mats":["1M","3M","6M","1Y","2Y","3Y","5Y","7Y","10Y","20Y","30Y"],"curve":[[2.42,2.41,2.46,2.55,2.45,2.43,2.43,2.51,2.63,2.83,2.99],[2.44,2.45,2.5,2.54,2.52,2.5,2.52,2.63,2.73,2.94,3.09],[2.43,2.4,2.44,2.4,2.27,2.21,2.23,2.31,2.41,2.63,2.81],[2.43,2.43,2.46,2.39,2.27,2.24,2.28,2.39,2.51,2.75,2.93],[2.35,2.35,2.35,2.21,1.95,1.9,1.93,2.03,2.14,2.39,2.58],[2.18,2.12,2.09,1.92,1.75,1.71,1.76,1.87,2.0,2.31,2.52],[2.01,2.08,2.1,2.0,1.89,1.84,1.84,1.92,2.02,2.31,2.53],[2.1,1.99,1.89,1.76,1.5,1.42,1.39,1.45,1.5,1.78,1.96],[1.91,1.88,1.83,1.75,1.63,1.56,1.55,1.62,1.68,1.94,2.12],[1.59,1.54,1.57,1.53,1.52,1.52,1.51,1.6,1.69,2.0,2.17],[1.62,1.59,1.63,1.6,1.61,1.61,1.62,1.73,1.78,2.07,2.21],[1.48,1.55,1.6,1.59,1.58,1.62,1.69,1.83,1.92,2.25,2.39],[1.56,1.55,1.54,1.45,1.33,1.3,1.32,1.42,1.51,1.83,1.99],[1.45,1.27,1.11,0.97,0.86,0.85,0.89,1.03,1.13,1.46,1.65],[0.05,0.11,0.15,0.17,0.23,0.29,0.37,0.55,0.7,1.15,1.35],[0.1,0.09,0.11,0.16,0.2,0.24,0.36,0.53,0.64,1.05,1.28],[0.13,0.14,0.18,0.17,0.16,0.19,0.3,0.5,0.65,1.18,1.41],[0.13,0.16,0.18,0.16,0.16,0.18,0.29,0.49,0.66,1.18,1.41],[0.09,0.09,0.1,0.11,0.11,0.11,0.21,0.39,0.55,0.98,1.2],[0.08,0.11,0.13,0.12,0.14,0.15,0.28,0.5,0.72,1.26,1.49],[0.08,0.1,0.11,0.12,0.13,0.16,0.28,0.47,0.69,1.23,1.46],[0.08,0.09,0.11,0.13,0.14,0.19,0.38,0.64,0.88,1.43,1.65],[0.08,0.08,0.09,0.11,0.16,0.19,0.36,0.62,0.84,1.37,1.58],[0.08,0.09,0.09,0.1,0.13,0.17,0.36,0.65,0.93,1.45,1.65],[0.07,0.06,0.07,0.1,0.11,0.19,0.45,0.79,1.11,1.68,1.87],[0.04,0.04,0.05,0.08,0.14,0.3,0.75,1.15,1.44,2.08,2.17],[0.01,0.03,0.05,0.07,0.16,0.35,0.92,1.4,1.74,2.31,2.41],[0.01,0.01,0.03,0.05,0.16,0.35,0.86,1.32,1.65,2.19,2.3],[0.01,0.01,0.03,0.05,0.14,0.3,0.79,1.24,1.58,2.18,2.26],[0.05,0.05,0.06,0.07,0.25,0.46,0.87,1.21,1.45,2.0,2.06],[0.05,0.06,0.05,0.07,0.19,0.35,0.69,1.0,1.24,1.81,1.89],[0.03,0.04,0.06,0.07,0.2,0.4,0.77,1.08,1.3,1.85,1.92],[0.07,0.04,0.05,0.09,0.28,0.53,0.98,1.32,1.52,2.02,2.08],[0.06,0.05,0.07,0.15,0.48,0.75,1.18,1.44,1.55,1.98,1.93],[0.11,0.05,0.1,0.24,0.52,0.81,1.14,1.36,1.43,1.85,1.78],[0.06,0.06,0.19,0.39,0.73,0.97,1.26,1.44,1.52,1.94,1.9],[0.03,0.22,0.49,0.78,1.18,1.39,1.62,1.75,1.79,2.17,2.11],[0.06,0.35,0.69,1.01,1.44,1.62,1.71,1.81,1.83,2.25,2.17],[0.17,0.52,1.06,1.63,2.28,2.45,2.42,2.4,2.32,2.59,2.44],[0.37,0.85,1.41,2.1,2.7,2.87,2.92,2.94,2.89,3.14,2.96],[0.73,1.16,1.64,2.08,2.53,2.71,2.81,2.87,2.85,3.28,3.07],[1.28,1.72,2.51,2.8,2.92,2.99,3.01,3.04,2.98,3.38,3.14],[2.22,2.41,2.91,2.98,2.89,2.83,2.7,2.7,2.67,3.2,3.0],[2.4,2.96,3.32,3.5,3.45,3.46,3.3,3.25,3.15,3.53,3.27],[2.79,3.33,3.92,4.05,4.22,4.25,4.06,3.97,3.83,4.08,3.79],[3.73,4.22,4.57,4.66,4.51,4.45,4.27,4.18,4.1,4.44,4.22],[4.07,4.37,4.7,4.74,4.38,4.13,3.82,3.76,3.68,4.0,3.8],[4.12,4.42,4.76,4.73,4.41,4.22,3.99,3.96,3.88,4.14,3.97],[4.58,4.7,4.8,4.68,4.21,3.9,3.63,3.59,3.52,3.78,3.65],[4.65,4.88,5.17,5.02,4.81,4.51,4.18,4.07,3.92,4.1,3.93],[4.74,4.85,4.94,4.64,4.06,3.81,3.6,3.55,3.48,3.81,3.67],[4.35,5.1,5.06,4.8,4.04,3.75,3.51,3.49,3.44,3.8,3.67],[5.28,5.52,5.46,5.18,4.4,4.04,3.74,3.69,3.64,4.01,3.85],[5.24,5.43,5.47,5.4,4.87,4.49,4.13,3.97,3.81,4.06,3.85],[5.48,5.55,5.53,5.37,4.88,4.51,4.18,4.08,3.97,4.22,4.02],[5.52,5.56,5.48,5.37,4.85,4.54,4.23,4.19,4.09,4.39,4.2],[5.55,5.55,5.53,5.46,5.03,4.8,4.6,4.61,4.59,4.92,4.73],[5.56,5.59,5.54,5.44,5.07,4.9,4.82,4.89,4.88,5.21,5.04],[5.56,5.45,5.38,5.16,4.73,4.48,4.31,4.38,4.37,4.72,4.54],[5.6,5.4,5.26,4.79,4.23,4.01,3.84,3.88,3.88,4.2,4.03],[5.53,5.42,5.18,4.73,4.27,4.05,3.91,3.95,3.99,4.34,4.22],[5.53,5.45,5.3,5.01,4.64,4.43,4.26,4.28,4.25,4.51,4.38],[5.49,5.46,5.38,5.03,4.59,4.4,4.21,4.2,4.2,4.45,4.34],[5.48,5.46,5.44,5.25,5.04,4.87,4.72,4.71,4.69,4.9,4.79],[5.48,5.46,5.42,5.18,4.89,4.69,4.52,4.52,4.51,4.73,4.65],[5.47,5.48,5.33,5.09,4.71,4.52,4.33,4.33,4.36,4.61,4.51],[5.49,5.41,5.14,4.73,4.29,4.1,3.97,4.0,4.09,4.44,4.35],[5.41,5.21,4.89,4.38,3.91,3.79,3.71,3.8,3.91,4.28,4.2],[4.93,4.73,4.38,3.98,3.66,3.58,3.58,3.67,3.81,4.19,4.14],[4.76,4.64,4.43,4.27,4.16,4.12,4.15,4.21,4.28,4.58,4.47],[4.76,4.58,4.42,4.3,4.13,4.1,4.05,4.1,4.18,4.45,4.36],[4.4,4.37,4.24,4.16,4.25,4.27,4.38,4.48,4.58,4.86,4.78],[4.37,4.31,4.28,4.17,4.22,4.27,4.36,4.47,4.58,4.88,4.83],[4.38,4.32,4.25,4.08,3.99,3.99,4.03,4.14,4.24,4.55,4.51],[4.38,4.32,4.23,4.03,3.89,3.89,3.96,4.09,4.23,4.62,4.59],[4.35,4.31,4.19,3.85,3.6,3.58,3.72,3.93,4.17,4.68,4.66],[4.33,4.36,4.36,4.11,3.89,3.87,3.96,4.18,4.41,4.93,4.92],[4.28,4.41,4.29,3.96,3.72,3.68,3.79,3.98,4.24,4.79,4.78],[4.49,4.41,4.31,4.1,3.94,3.89,3.96,4.14,4.37,4.89,4.89],[4.41,4.23,4.01,3.83,3.59,3.58,3.68,3.92,4.23,4.86,4.92],[4.2,4.02,3.83,3.68,3.6,3.61,3.74,3.93,4.16,4.71,4.73],[4.06,3.89,3.79,3.7,3.6,3.6,3.71,3.89,4.11,4.65,4.67],[4.05,3.88,3.74,3.61,3.47,3.49,3.59,3.78,4.02,4.62,4.67],[3.74,3.67,3.59,3.48,3.47,3.55,3.73,3.94,4.18,4.79,4.84],[3.72,3.67,3.61,3.48,3.52,3.6,3.79,4.01,4.26,4.82,4.87],[3.74,3.67,3.6,3.48,3.38,3.39,3.51,3.72,3.97,4.57,4.64],[3.74,3.7,3.72,3.68,3.79,3.81,3.92,4.11,4.3,4.88,4.88],[3.72,3.68,3.71,3.72,3.88,3.91,4.02,4.2,4.4,4.97,4.98],[3.72,3.69,3.78,3.79,3.98,4.06,4.13,4.27,4.45,4.98,4.99],[3.7,3.87,4.01,3.98,4.14,4.15,4.19,4.3,4.44,4.93,4.91],[3.78,3.83,3.98,4.08,4.28,4.34,4.45,4.59,4.75,5.28,5.27],[3.85,3.91,3.99,4.16,4.34,4.4,4.49,4.62,4.75,5.24,5.25],[3.97,4.14,4.24,4.44,4.76,4.83,4.86,4.93,5.01,5.38,5.34]],"wk":{"t":["2019-01-04","2019-01-11","2019-01-18","2019-01-25","2019-02-01","2019-02-08","2019-02-15","2019-02-22","2019-03-01","2019-03-08","2019-03-15","2019-03-22","2019-03-29","2019-04-05","2019-04-12","2019-04-18","2019-04-26","2019-05-03","2019-05-10","2019-05-17","2019-05-24","2019-05-31","2019-06-07","2019-06-14","2019-06-21","2019-06-28","2019-07-05","2019-07-12","2019-07-19","2019-07-26","2019-08-02","2019-08-09","2019-08-16","2019-08-23","2019-08-30","2019-09-06","2019-09-13","2019-09-20","2019-09-27","2019-10-04","2019-10-11","2019-10-18","2019-10-25","2019-11-01","2019-11-08","2019-11-15","2019-11-22","2019-11-29","2019-12-06","2019-12-13","2019-12-20","2019-12-27","2020-01-03","2020-01-10","2020-01-17","2020-01-24","2020-01-31","2020-02-07","2020-02-14","2020-02-21","2020-02-28","2020-03-06","2020-03-13","2020-03-20","2020-03-27","2020-04-03","2020-04-09","2020-04-17","2020-04-24","2020-05-01","2020-05-08","2020-05-15","2020-05-22","2020-05-29","2020-06-05","2020-06-12","2020-06-19","2020-06-26","2020-07-02","2020-07-10","2020-07-17","2020-07-24","2020-07-31","2020-08-07","2020-08-14","2020-08-21","2020-08-28","2020-09-04","2020-09-11","2020-09-18","2020-09-25","2020-10-02","2020-10-09","2020-10-16","2020-10-23","2020-10-30","2020-11-06","2020-11-13","2020-11-20","2020-11-27","2020-12-04","2020-12-11","2020-12-18","2020-12-24","2020-12-31","2021-01-08","2021-01-15","2021-01-22","2021-01-29","2021-02-05","2021-02-12","2021-02-19","2021-02-26","2021-03-05","2021-03-12","2021-03-19","2021-03-26","2021-04-02","2021-04-09","2021-04-16","2021-04-23","2021-04-30","2021-05-07","2021-05-14","2021-05-21","2021-05-28","2021-06-04","2021-06-11","2021-06-18","2021-06-25","2021-07-02","2021-07-09","2021-07-16","2021-07-23","2021-07-30","2021-08-06","2021-08-13","2021-08-20","2021-08-27","2021-09-03","2021-09-10","2021-09-17","2021-09-24","2021-10-01","2021-10-08","2021-10-15","2021-10-22","2021-10-29","2021-11-05","2021-11-12","2021-11-19","2021-11-26","2021-12-03","2021-12-10","2021-12-17","2021-12-23","2021-12-31","2022-01-07","2022-01-14","2022-01-21","2022-01-28","2022-02-04","2022-02-11","2022-02-18","2022-02-25","2022-03-04","2022-03-11","2022-03-18","2022-03-25","2022-04-01","2022-04-08","2022-04-14","2022-04-22","2022-04-29","2022-05-06","2022-05-13","2022-05-20","2022-05-27","2022-06-03","2022-06-10","2022-06-17","2022-06-24","2022-07-01","2022-07-08","2022-07-15","2022-07-22","2022-07-29","2022-08-05","2022-08-12","2022-08-19","2022-08-26","2022-09-02","2022-09-09","2022-09-16","2022-09-23","2022-09-30","2022-10-07","2022-10-14","2022-10-21","2022-10-28","2022-11-04","2022-11-10","2022-11-18","2022-11-25","2022-12-02","2022-12-09","2022-12-16","2022-12-23","2022-12-30","2023-01-06","2023-01-13","2023-01-20","2023-01-27","2023-02-03","2023-02-10","2023-02-17","2023-02-24","2023-03-03","2023-03-10","2023-03-17","2023-03-24","2023-03-31","2023-04-07","2023-04-14","2023-04-21","2023-04-28","2023-05-05","2023-05-12","2023-05-19","2023-05-26","2023-06-02","2023-06-09","2023-06-16","2023-06-23","2023-06-30","2023-07-07","2023-07-14","2023-07-21","2023-07-28","2023-08-04","2023-08-11","2023-08-18","2023-08-25","2023-09-01","2023-09-08","2023-09-15","2023-09-22","2023-09-29","2023-10-06","2023-10-13","2023-10-20","2023-10-27","2023-11-03","2023-11-10","2023-11-17","2023-11-24","2023-12-01","2023-12-08","2023-12-15","2023-12-22","2023-12-29","2024-01-05","2024-01-12","2024-01-19","2024-01-26","2024-02-02","2024-02-09","2024-02-16","2024-02-23","2024-03-01","2024-03-08","2024-03-15","2024-03-22","2024-03-28","2024-04-05","2024-04-12","2024-04-19","2024-04-26","2024-05-03","2024-05-10","2024-05-17","2024-05-24","2024-05-31","2024-06-07","2024-06-14","2024-06-21","2024-06-28","2024-07-05","2024-07-12","2024-07-19","2024-07-26","2024-08-02","2024-08-09","2024-08-16","2024-08-23","2024-08-30","2024-09-06","2024-09-13","2024-09-20","2024-09-27","2024-10-04","2024-10-11","2024-10-18","2024-10-25","2024-11-01","2024-11-08","2024-11-15","2024-11-22","2024-11-29","2024-12-06","2024-12-13","2024-12-20","2024-12-27","2025-01-03","2025-01-10","2025-01-17","2025-01-24","2025-01-31","2025-02-07","2025-02-14","2025-02-21","2025-02-28","2025-03-07","2025-03-14","2025-03-21","2025-03-28","2025-04-04","2025-04-11","2025-04-17","2025-04-25","2025-05-02","2025-05-09","2025-05-16","2025-05-23","2025-05-30","2025-06-06","2025-06-13","2025-06-20","2025-06-27","2025-07-03","2025-07-11","2025-07-18","2025-07-25","2025-08-01","2025-08-08","2025-08-15","2025-08-22","2025-08-29","2025-09-05","2025-09-12","2025-09-19","2025-09-26","2025-10-03","2025-10-10","2025-10-17","2025-10-24","2025-10-31","2025-11-07","2025-11-14","2025-11-21","2025-11-28","2025-12-05","2025-12-12","2025-12-19","2025-12-26","2026-01-02","2026-01-09","2026-01-16","2026-01-23","2026-01-30","2026-02-06","2026-02-13","2026-02-20","2026-02-27","2026-03-06","2026-03-13","2026-03-20","2026-03-27","2026-04-03","2026-04-10","2026-04-17","2026-04-24","2026-05-01","2026-05-08","2026-05-15","2026-05-22","2026-05-29","2026-06-05","2026-06-12","2026-06-18","2026-06-26","2026-07-02","2026-07-10","2026-07-17","2026-07-24","2026-07-31","2026-08-07","2026-08-14","2026-08-21","2026-08-28","2026-09-04","2026-09-11","2026-09-18"],"y10":[2.67,2.71,2.79,2.76,2.7,2.63,2.66,2.65,2.76,2.62,2.59,2.44,2.41,2.5,2.56,2.57,2.51,2.54,2.47,2.39,2.32,2.14,2.09,2.09,2.07,2.0,2.04,2.12,2.05,2.08,1.86,1.74,1.55,1.52,1.5,1.55,1.9,1.74,1.69,1.52,1.76,1.76,1.8,1.73,1.94,1.84,1.77,1.78,1.84,1.82,1.92,1.88,1.8,1.83,1.84,1.7,1.51,1.59,1.59,1.46,1.13,0.74,0.94,0.92,0.72,0.62,0.73,0.65,0.6,0.64,0.69,0.64,0.66,0.65,0.91,0.71,0.7,0.64,0.68,0.65,0.64,0.59,0.55,0.57,0.71,0.64,0.74,0.72,0.67,0.7,0.66,0.7,0.79,0.76,0.85,0.88,0.83,0.89,0.83,0.84,0.97,0.9,0.95,0.94,0.93,1.13,1.11,1.1,1.11,1.19,1.2,1.34,1.44,1.56,1.64,1.74,1.67,1.72,1.67,1.59,1.58,1.65,1.6,1.63,1.63,1.58,1.56,1.47,1.45,1.54,1.44,1.37,1.31,1.3,1.24,1.31,1.29,1.26,1.31,1.33,1.35,1.37,1.47,1.48,1.61,1.59,1.66,1.55,1.45,1.58,1.54,1.48,1.35,1.48,1.41,1.5,1.52,1.76,1.78,1.75,1.78,1.93,1.92,1.92,1.97,1.74,2.0,2.14,2.48,2.39,2.72,2.83,2.9,2.89,3.12,2.93,2.78,2.74,2.96,3.15,3.25,3.13,2.88,3.09,2.93,2.77,2.67,2.83,2.84,2.98,3.04,3.2,3.33,3.45,3.69,3.83,3.89,4.0,4.21,4.02,4.17,3.82,3.82,3.68,3.51,3.57,3.48,3.75,3.88,3.55,3.49,3.48,3.52,3.53,3.74,3.82,3.95,3.97,3.7,3.39,3.38,3.48,3.39,3.52,3.57,3.44,3.44,3.46,3.7,3.8,3.69,3.75,3.77,3.74,3.81,4.06,3.83,3.84,3.96,4.05,4.16,4.26,4.25,4.18,4.26,4.33,4.44,4.59,4.78,4.63,4.93,4.84,4.57,4.61,4.44,4.47,4.22,4.23,3.91,3.9,3.88,4.05,3.96,4.15,4.15,4.03,4.17,4.3,4.26,4.19,4.09,4.31,4.22,4.2,4.39,4.5,4.62,4.67,4.5,4.5,4.42,4.46,4.51,4.43,4.2,4.25,4.36,4.28,4.18,4.25,4.2,3.8,3.94,3.89,3.81,3.91,3.72,3.66,3.73,3.75,3.98,4.08,4.08,4.25,4.37,4.3,4.43,4.41,4.18,4.15,4.4,4.52,4.62,4.6,4.77,4.61,4.63,4.58,4.49,4.47,4.42,4.24,4.32,4.31,4.25,4.27,4.01,4.48,4.34,4.29,4.33,4.37,4.43,4.51,4.41,4.51,4.41,4.38,4.29,4.35,4.43,4.44,4.4,4.23,4.27,4.33,4.26,4.23,4.1,4.06,4.14,4.2,4.13,4.05,4.02,4.02,4.11,4.11,4.14,4.06,4.02,4.14,4.19,4.16,4.14,4.19,4.18,4.24,4.24,4.26,4.22,4.04,4.08,3.97,4.15,4.28,4.39,4.44,4.35,4.31,4.26,4.31,4.39,4.38,4.59,4.56,4.45,4.55,4.48,4.46,4.38,4.49,4.56,4.55,4.69,4.75,4.65,4.68,4.74,4.73,4.78,4.96,5.01],"y2":[2.5,2.55,2.62,2.6,2.52,2.45,2.52,2.48,2.55,2.45,2.43,2.31,2.27,2.35,2.4,2.38,2.28,2.33,2.26,2.2,2.16,1.95,1.85,1.84,1.77,1.75,1.87,1.84,1.8,1.86,1.72,1.63,1.48,1.51,1.5,1.53,1.79,1.69,1.63,1.4,1.63,1.58,1.63,1.56,1.68,1.61,1.61,1.61,1.61,1.61,1.63,1.59,1.53,1.56,1.58,1.49,1.33,1.41,1.42,1.34,0.86,0.49,0.49,0.37,0.25,0.23,0.23,0.2,0.22,0.2,0.16,0.16,0.17,0.16,0.22,0.19,0.19,0.17,0.16,0.16,0.14,0.14,0.11,0.13,0.14,0.16,0.14,0.14,0.13,0.14,0.12,0.13,0.16,0.14,0.18,0.14,0.16,0.17,0.16,0.16,0.16,0.11,0.13,0.13,0.13,0.14,0.13,0.13,0.11,0.09,0.11,0.11,0.14,0.14,0.14,0.16,0.14,0.19,0.16,0.16,0.16,0.16,0.14,0.16,0.17,0.14,0.14,0.16,0.26,0.28,0.24,0.23,0.25,0.22,0.19,0.21,0.23,0.23,0.22,0.21,0.23,0.23,0.29,0.27,0.32,0.41,0.48,0.48,0.39,0.53,0.52,0.5,0.6,0.67,0.66,0.71,0.73,0.87,0.99,1.01,1.15,1.31,1.5,1.47,1.55,1.5,1.75,1.97,2.3,2.44,2.53,2.47,2.72,2.7,2.72,2.61,2.6,2.47,2.66,3.06,3.17,3.04,2.84,3.12,3.13,2.98,2.89,3.24,3.25,3.25,3.37,3.4,3.56,3.85,4.2,4.22,4.3,4.48,4.49,4.41,4.66,4.34,4.51,4.42,4.28,4.33,4.17,4.31,4.41,4.24,4.22,4.14,4.19,4.3,4.5,4.6,4.78,4.86,4.6,3.81,3.76,4.06,3.97,4.08,4.17,4.04,3.92,3.98,4.28,4.54,4.5,4.59,4.7,4.71,4.87,4.94,4.74,4.82,4.87,4.78,4.89,4.92,5.03,4.87,4.98,5.02,5.1,5.03,5.08,5.04,5.07,4.99,4.83,5.04,4.88,4.92,4.56,4.71,4.44,4.31,4.23,4.4,4.14,4.39,4.34,4.36,4.48,4.64,4.67,4.54,4.48,4.72,4.59,4.59,4.73,4.88,4.97,4.96,4.81,4.87,4.83,4.93,4.89,4.87,4.67,4.7,4.71,4.6,4.45,4.49,4.36,3.88,4.05,4.06,3.9,3.91,3.66,3.57,3.55,3.55,3.93,3.95,3.95,4.11,4.21,4.26,4.31,4.37,4.13,4.1,4.25,4.3,4.31,4.28,4.4,4.27,4.27,4.22,4.29,4.26,4.19,3.99,3.99,4.02,3.94,3.89,3.68,3.96,3.81,3.74,3.83,3.88,3.98,4.0,3.89,4.04,3.96,3.9,3.73,3.88,3.9,3.88,3.91,3.69,3.76,3.75,3.68,3.59,3.51,3.56,3.57,3.63,3.58,3.52,3.46,3.48,3.6,3.55,3.62,3.51,3.47,3.56,3.52,3.48,3.46,3.47,3.54,3.59,3.6,3.52,3.5,3.4,3.48,3.38,3.56,3.73,3.88,3.88,3.84,3.81,3.71,3.78,3.88,3.9,4.09,4.13,3.98,4.17,4.09,4.19,4.07,4.14,4.21,4.18,4.33,4.28,4.19,4.17,4.24,4.34,4.37,4.63,4.76]},"layers":{"cpi":[1.49,1.52,1.88,2.0,1.8,1.67,1.83,1.74,1.68,1.73,2.09,2.32,2.6,2.34,1.49,0.31,0.2,0.72,1.0,1.28,1.39,1.23,1.18,1.32,1.37,1.67,2.67,4.13,4.92,5.3,5.25,5.15,5.35,6.24,6.9,7.17,7.56,7.94,8.57,8.23,8.54,8.98,8.46,8.22,8.19,7.76,7.12,6.4,6.33,5.96,4.92,4.95,4.13,3.07,3.29,3.72,3.69,3.25,3.13,3.32,3.09,3.16,3.49,3.36,3.24,2.97,2.94,2.61,2.43,2.58,2.72,2.87,2.99,2.8,2.38,2.33,2.38,2.68,2.74,2.94,3.02,null,2.7,2.65,2.39,2.43,3.29,3.78,4.17,3.46,3.3,3.35,null],"un":[4.0,3.8,3.8,3.7,3.6,3.6,3.7,3.6,3.5,3.6,3.6,3.6,3.6,3.5,4.4,14.8,13.2,11.0,10.2,8.4,7.8,6.9,6.7,6.7,6.4,6.2,6.1,6.1,5.8,5.9,5.4,5.1,4.7,4.5,4.1,3.9,4.0,3.9,3.7,3.7,3.6,3.6,3.5,3.6,3.5,3.6,3.6,3.5,3.5,3.6,3.5,3.4,3.6,3.6,3.5,3.7,3.7,3.9,3.7,3.8,3.7,3.9,3.9,3.9,3.9,4.1,4.2,4.2,4.1,4.1,4.2,4.1,4.0,4.2,4.2,4.2,4.3,4.1,4.3,4.3,4.4,null,4.5,4.4,4.3,4.4,4.3,4.3,4.3,4.2,4.1,4.1,null],"usd":[113.55,114.2,115.14,115.33,116.73,114.58,115.49,118.16,117.95,115.91,117.12,114.67,115.73,117.66,122.53,122.33,120.95,120.46,117.21,115.76,116.95,116.14,113.23,111.32,111.95,112.83,113.82,112.08,110.76,112.55,112.67,113.11,114.64,114.13,116.21,115.28,115.57,115.22,115.22,119.49,118.07,120.97,121.77,123.53,127.51,127.62,123.52,121.43,118.98,121.33,119.36,119.22,120.97,119.36,117.82,120.22,122.31,123.84,120.24,118.42,120.43,121.18,121.02,122.99,122.1,124.21,123.64,122.33,121.29,124.8,126.58,129.28,128.48,128.28,126.71,122.59,121.77,119.41,121.72,120.21,120.14,121.39,121.05,119.75,117.9,117.82,121.03,118.67,118.88,120.92,119.7,118.57,119.51],"y10":[2.63,2.73,2.41,2.51,2.14,2.0,2.02,1.5,1.68,1.69,1.78,1.92,1.51,1.13,0.7,0.64,0.65,0.66,0.55,0.72,0.69,0.88,0.84,0.93,1.11,1.44,1.74,1.65,1.58,1.45,1.24,1.3,1.52,1.55,1.43,1.52,1.79,1.83,2.32,2.89,2.85,2.98,2.67,3.15,3.83,4.1,3.68,3.88,3.52,3.92,3.48,3.44,3.64,3.81,3.97,4.09,4.59,4.88,4.37,3.88,3.99,4.25,4.2,4.69,4.51,4.36,4.09,3.91,3.81,4.28,4.18,4.58,4.58,4.24,4.23,4.17,4.41,4.24,4.37,4.23,4.16,4.11,4.02,4.18,4.26,3.97,4.3,4.4,4.45,4.44,4.75,4.75,5.01]},"asof":"2026-09-18"};
+  const $ = id => document.getElementById(id);
+  const root = document.documentElement;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+  const N = LAB.n, MATS = LAB.mats, CURVE = LAB.curve, WK = LAB.wk;
+  const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const monthLabel = i => { const m = +LAB.start.slice(5) - 1 + i; return MON[m % 12] + " " + (+LAB.start.slice(0, 4) + Math.floor(m / 12)); };
+  const dayLabel = s => { const [y, m, d] = s.split("-"); return +d + " " + MON[+m - 1] + " " + y; };
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, k) => a + (b - a) * k;
+  const ease = k => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
+
+  /* ----- palette, read from the theme ----- */
+  let P = {};
+  function readPalette() {
+    const c = getComputedStyle(root), g = n => c.getPropertyValue(n).trim();
+    P = { bg: g("--bg"), text: g("--text"), muted: g("--muted"), grid: g("--grid"), gold: g("--gold"), blue: g("--blue"), teal: g("--teal"), lilac: g("--lilac"), neg: g("--neg"), body: g("--body") };
+  }
+  const hex = h => { h = h.replace("#", ""); if (h.length === 3) h = h.split("").map(x => x + x).join(""); return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16)); };
+  const rgba = (h, a) => { const [r, g, b] = hex(h); return `rgba(${r},${g},${b},${a})`; };
+  const mix = (a, b, t) => { const A = hex(a), B = hex(b); return "#" + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, "0")).join(""); };
+
+  /* ----- canvas sizing ----- */
+  function fit(cv) {
+    const r = cv.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
+    const w = Math.max(1, Math.round(r.width)), h = Math.max(1, Math.round(r.height));
+    if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+    const ctx = cv.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx, w, h };
+  }
+
+  /* =====================================================================
+     1. Helix. Height of the axis: the mean of the two yields. Radius: half their gap.
+        Untwisted, the two strands are exactly the 10-year and 2-year lines.
+     ===================================================================== */
+  const H = { tau: 1, from: 1, to: 1, t0: null, rot: 0, hover: -1, last: 0 };
+  const WN = WK.t.length, VMIN = -0.8, VMAX = 6, OMEGA = 0.24, BOOST = 2;   // BOOST magnifies the gap when twisted so the helix reads
+  const helixCv = $("cv-helix"), hTip = $("h-tip");
+  const yearIdx = [];
+  for (let y = 2019; y <= 2026; y++) { const k = WK.t.findIndex(d => d >= y + "-01-01"); if (k >= 0) yearIdx.push([y, k]); }
+
+  $("twist").addEventListener("click", e => {
+    const on = e.currentTarget.getAttribute("aria-pressed") !== "true";
+    e.currentTarget.setAttribute("aria-pressed", String(on));
+    e.currentTarget.textContent = on ? "Untwist" : "Twist";
+    H.from = H.tau; H.to = on ? 1 : 0; H.t0 = null;
+    if (reduce.matches) { H.tau = H.to; }
+  });
+
+  function helixFrame(now) {
+    const { ctx, w, h } = fit(helixCv);
+    const dt = H.last ? Math.min(0.05, (now - H.last) / 1000) : 0;
+    H.last = now;
+    if (H.tau !== H.to) {
+      if (H.t0 === null) H.t0 = now;
+      const k = clamp((now - H.t0) / 1500, 0, 1);
+      H.tau = lerp(H.from, H.to, ease(k));
+      if (k >= 1) H.tau = H.to;
+    }
+    if (!reduce.matches) H.rot += dt * 0.9 * H.tau;
+    const left = 56, right = w - 110, top = 30, bottom = h - 132;
+    const X = i => left + (right - left) * i / (WN - 1);
+    const Y = v => bottom - ((v - VMIN) / (VMAX - VMIN)) * (bottom - top);
+    const px = (bottom - top) / (VMAX - VMIN);
+    ctx.clearRect(0, 0, w, h);
+    ctx.font = `500 12px ${P.body}`;
+
+    // grid and axes
+    ctx.lineWidth = 1;
+    for (const v of [0, 2, 4]) {
+      ctx.strokeStyle = rgba(P.grid, 1); ctx.beginPath(); ctx.moveTo(left, Y(v)); ctx.lineTo(right, Y(v)); ctx.stroke();
+      ctx.fillStyle = P.muted; ctx.textAlign = "right"; ctx.fillText(v + "%", left - 10, Y(v) + 4);
+    }
+    ctx.textAlign = "left"; ctx.fillStyle = P.muted;
+    for (const [y, k] of yearIdx) ctx.fillText(y, X(k) + 3, bottom + 20);
+
+    // geometry
+    const prims = [];
+    let prev = null;
+    const pts = [];
+    for (let i = 0; i < WN; i++) {
+      const a = WK.y10[i], b = WK.y2[i], s = a - b, mid = (a + b) / 2;
+      const phi = H.tau * (OMEGA * i + H.rot), c = Math.cos(phi), sn = Math.sin(phi);
+      const r = (s / 2) * (1 + (BOOST - 1) * H.tau), x = X(i);
+      pts.push({ x, ya: Y(mid + r * c), yb: Y(mid - r * c), z: r * sn * px, s });
+    }
+    const depth = z => lerp(1, clamp(z / 90 * 0.5 + 0.5, 0, 1), H.tau);
+    for (let i = 1; i < WN; i++) {
+      const p = pts[i - 1], q = pts[i];
+      const za = (p.z + q.z) / 2;
+      prims.push({ z: za, k: "a", p, q });
+      prims.push({ z: -za, k: "b", p, q });
+      if (i % 3 === 0) prims.push({ z: 0, k: "r", q });
+    }
+    prims.sort((m, n) => m.z - n.z);
+    ctx.lineCap = "round";
+    for (const m of prims) {
+      if (m.k === "r") {
+        const q = m.q;
+        ctx.strokeStyle = q.s >= 0 ? rgba(P.text, 0.3) : rgba(P.neg, 0.9);
+        ctx.lineWidth = q.s >= 0 ? 1 : 1.6;
+        ctx.beginPath(); ctx.moveTo(q.x, q.ya); ctx.lineTo(q.x, q.yb); ctx.stroke();
+      } else {
+        const a = m.k === "a", d = depth(m.z);
+        ctx.strokeStyle = rgba(a ? P.gold : P.blue, 0.3 + 0.7 * d);
+        ctx.lineWidth = 1.4 + 1.8 * d;
+        ctx.beginPath();
+        ctx.moveTo(m.p.x, a ? m.p.ya : m.p.yb);
+        ctx.lineTo(m.q.x, a ? m.q.ya : m.q.yb);
+        ctx.stroke();
+      }
+    }
+
+    // hover
+    if (H.hover >= 0) {
+      const p = pts[H.hover];
+      ctx.strokeStyle = rgba(P.text, 0.35); ctx.lineWidth = 1; ctx.setLineDash([3, 4]);
+      ctx.beginPath(); ctx.moveTo(p.x, top - 10); ctx.lineTo(p.x, bottom + 4); ctx.stroke(); ctx.setLineDash([]);
+    }
+
+    // end labels
+    const e = pts[WN - 1], la = WK.y10[WN - 1], lb = WK.y2[WN - 1];
+    let ya = e.ya, yb = e.yb;
+    if (Math.abs(ya - yb) < 18) { const m = (ya + yb) / 2, sgn = ya < yb ? -1 : 1; ya = m + sgn * 9; yb = m - sgn * 9; }
+    ctx.textAlign = "left";
+    ctx.fillStyle = P.gold; ctx.fillText("10Y", e.x + 12, ya - 2);
+    ctx.fillStyle = P.text; ctx.font = `600 13px ${P.body}`; ctx.fillText(la.toFixed(2) + "%", e.x + 12, ya + 13);
+    ctx.font = `500 12px ${P.body}`;
+    ctx.fillStyle = P.blue; ctx.fillText("2Y", e.x + 12, yb - 2 + 30 * (Math.abs(ya - yb) < 30 ? 1 : 0));
+    ctx.fillStyle = P.text; ctx.font = `600 13px ${P.body}`; ctx.fillText(lb.toFixed(2) + "%", e.x + 12, yb + 13 + 30 * (Math.abs(ya - yb) < 30 ? 1 : 0));
+
+    helixCv._pts = pts;
+  }
+  helixCv.addEventListener("pointermove", e => {
+    const pts = helixCv._pts; if (!pts) return;
+    const r = helixCv.getBoundingClientRect(), x = e.clientX - r.left;
+    let best = 0, bd = Infinity;
+    for (let i = 0; i < pts.length; i += 1) { const d = Math.abs(pts[i].x - x); if (d < bd) { bd = d; best = i; } }
+    if (bd > 24) { H.hover = -1; hTip.classList.remove("on"); return; }
+    H.hover = best;
+    const a = WK.y10[best], b = WK.y2[best], s = Math.round((a - b) * 100);
+    hTip.innerHTML = `<b>${dayLabel(WK.t[best])}</b>10Y ${a.toFixed(2)}%<br>2Y ${b.toFixed(2)}%<br>Gap ${s < 0 ? "−" : "+"}${Math.abs(s)} bp${s < 0 ? " (inverted)" : ""}`;
+    hTip.style.left = Math.min(x + 16, r.width - 150) + "px";
+    hTip.style.top = Math.max(8, e.clientY - r.top - 70) + "px";
+    hTip.classList.add("on");
+  });
+  helixCv.addEventListener("pointerleave", () => { H.hover = -1; hTip.classList.remove("on"); });
+
+  /* =====================================================================
+     2. Layers: four series as translucent planes, pulled apart in depth
+     ===================================================================== */
+  const LAYERS = [
+    { name: "Dollar index", key: "usd", c: "--lilac", f: v => v.toFixed(1) },
+    { name: "Unemployment", key: "un", c: "--teal", f: v => v.toFixed(1) + "%" },
+    { name: "Inflation", key: "cpi", c: "--blue", f: v => v.toFixed(1) + "%" },
+    { name: "10-year yield", key: "y10", c: "--gold", f: v => v.toFixed(2) + "%" }
+  ];
+  const scene = $("scene");
+  scene.innerHTML = LAYERS.map((L, i) => {
+    const raw = LAB.layers[L.key], vals = raw.filter(v => v !== null), lo = Math.min(...vals), hi = Math.max(...vals);
+    const pts = []; raw.forEach((v, j) => { if (v !== null) pts.push([(j / (raw.length - 1)) * 100, 36 - ((v - lo) / (hi - lo)) * 32]); });
+    const end = pts[pts.length - 1];
+    return `<div class="plane" style="--i:${i};--c:var(${L.c})">
+      <svg viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true"><path d="M${pts.map(p => p[0].toFixed(2) + "," + p[1].toFixed(2)).join("L")}"/></svg>
+      <span class="pn">${L.name}</span><span class="pv">${L.f(vals[vals.length - 1])}</span>
+    </div>`;
+  }).join("") + `<div class="spine"></div>`;
+  // end-of-line dots sit over each plane's svg box: place them with the same maths
+  scene.querySelectorAll(".plane").forEach((pl, i) => {
+    const raw = LAB.layers[LAYERS[i].key], vals = raw.filter(v => v !== null), lo = Math.min(...vals), hi = Math.max(...vals);
+    const y = 36 - ((vals[vals.length - 1] - lo) / (hi - lo)) * 32;
+    const d = document.createElement("i"); d.className = "pd";
+    d.style.left = "95%"; d.style.top = (14 + (y / 40) * 76) + "%";
+    pl.appendChild(d);
+  });
+  const Ly = { gap: 110, from: 110, to: 110, t0: null, raf: 0 };
+  scene.style.setProperty("--gap", "14px");
+  function tweenGap(to) {
+    cancelAnimationFrame(Ly.raf);
+    Ly.from = parseFloat(scene.style.getPropertyValue("--gap")) || 14; Ly.to = to; Ly.t0 = null;
+    if (reduce.matches) { scene.style.setProperty("--gap", to + "px"); return; }
+    const step = now => {
+      if (Ly.t0 === null) Ly.t0 = now;
+      const k = clamp((now - Ly.t0) / 1100, 0, 1);
+      scene.style.setProperty("--gap", lerp(Ly.from, Ly.to, ease(k)).toFixed(1) + "px");
+      if (k < 1) Ly.raf = requestAnimationFrame(step);
+    };
+    Ly.raf = requestAnimationFrame(step);
+  }
+  $("explode").addEventListener("click", e => {
+    const on = e.currentTarget.getAttribute("aria-pressed") !== "true";
+    e.currentTarget.setAttribute("aria-pressed", String(on));
+    e.currentTarget.textContent = on ? "Assemble" : "Explode";
+    tweenGap(on ? 110 : 14);
+  });
+  (() => {   // drag to rotate
+    const el = $("layers"); let drag = null, rx = 58, rz = -30;
+    el.addEventListener("pointerdown", e => { drag = { x: e.clientX, y: e.clientY, rx, rz }; el.setPointerCapture(e.pointerId); el.style.cursor = "grabbing"; });
+    el.addEventListener("pointermove", e => {
+      if (!drag) return;
+      rz = drag.rz + (e.clientX - drag.x) * 0.4;
+      rx = clamp(drag.rx - (e.clientY - drag.y) * 0.3, 20, 82);
+      scene.style.setProperty("--rz", rz + "deg"); scene.style.setProperty("--rx", rx + "deg");
+    });
+    const end = () => { drag = null; el.style.cursor = ""; };
+    el.addEventListener("pointerup", end); el.addEventListener("pointercancel", end);
+  })();
+
+  /* =====================================================================
+     3. Terrain: 93 months x 11 maturities as a lit-by-height surface
+     ===================================================================== */
+  const T = { yaw: -0.65, pitch: 0.95, grow: 0, g0: null, sel: N - 1, spin: true, last: 0, drag: null };
+  const terrainCv = $("cv-terrain"), month = $("month"), tRead = $("t-read");
+  const inverted = i => CURVE[i][8] < CURVE[i][4];
+  function readout() {
+    const c = CURVE[T.sel];
+    tRead.innerHTML = `<b>${monthLabel(T.sel)}</b> ` + MATS.map((m, j) => `<span>${m}</span> ${c[j].toFixed(2)}`).join("  ") + (inverted(T.sel) ? " <span>· inverted</span>" : "");
+  }
+  month.addEventListener("input", () => { T.sel = +month.value; readout(); });
+  terrainCv.addEventListener("pointerdown", e => { T.drag = { x: e.clientX, y: e.clientY, yaw: T.yaw, pitch: T.pitch }; T.spin = false; terrainCv.setPointerCapture(e.pointerId); terrainCv.style.cursor = "grabbing"; });
+  terrainCv.addEventListener("pointermove", e => {
+    if (!T.drag) return;
+    T.yaw = T.drag.yaw + (e.clientX - T.drag.x) * 0.008;
+    T.pitch = clamp(T.drag.pitch + (e.clientY - T.drag.y) * 0.006, 0.2, 1.35);
+  });
+  const tEnd = () => { T.drag = null; terrainCv.style.cursor = ""; };
+  terrainCv.addEventListener("pointerup", tEnd); terrainCv.addEventListener("pointercancel", tEnd);
+
+  function terrainFrame(now) {
+    const { ctx, w, h } = fit(terrainCv);
+    const dt = T.last ? Math.min(0.05, (now - T.last) / 1000) : 0;
+    T.last = now;
+    if (T.g0 === null) T.g0 = now;
+    T.grow = reduce.matches ? 1 : ease(clamp((now - T.g0) / 1800, 0, 1));
+    if (T.spin && !reduce.matches) T.yaw += dt * 0.07;
+    ctx.clearRect(0, 0, w, h);
+    const cy_ = Math.cos(T.yaw), sy_ = Math.sin(T.yaw), cp = Math.cos(T.pitch), sp = Math.sin(T.pitch);
+    const S = Math.min(w / 4.9, h / 3.5), cx = w / 2, cyc = h * 0.4, D = 7.5;
+    const project = (x, y, z) => {
+      const X = x * cy_ + z * sy_, Zr = -x * sy_ + z * cy_;
+      const Y = y * cp - Zr * sp, Z = y * sp + Zr * cp;
+      const k = D / (D - Z);
+      return [cx + X * S * k, cyc - Y * S * k, Z];
+    };
+    const wx = j => (j / (MATS.length - 1) - 0.5) * 2;
+    const wz = i => (i / (N - 1) - 0.5) * 3;
+    const wy = v => (v / 5.8) * 1.15 * T.grow - 0.35;
+    // vertices
+    const V = CURVE.map((row, i) => row.map((v, j) => project(wx(j), wy(v), wz(i))));
+    const base = mix(P.bg, P.gold, 0.1);
+    const quads = [];
+    for (let i = 0; i < N - 1; i++) for (let j = 0; j < MATS.length - 1; j++) {
+      const a = V[i][j], b = V[i][j + 1], c = V[i + 1][j + 1], d = V[i + 1][j];
+      const v = (CURVE[i][j] + CURVE[i][j + 1] + CURVE[i + 1][j] + CURVE[i + 1][j + 1]) / 4;
+      quads.push({ a, b, c, d, z: (a[2] + b[2] + c[2] + d[2]) / 4, v, inv: inverted(i) && j >= 4 && j <= 7 });
+    }
+    quads.sort((m, n) => m.z - n.z);
+    // base plate
+    ctx.strokeStyle = rgba(P.grid, 1); ctx.lineWidth = 1;
+    const plate = [project(-1, wy(0), wz(0)), project(1, wy(0), wz(0)), project(1, wy(0), wz(N - 1)), project(-1, wy(0), wz(N - 1))];
+    ctx.beginPath(); plate.forEach((p, k) => (k ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]))); ctx.closePath(); ctx.stroke();
+    for (const q of quads) {
+      const t = clamp(q.v / 5.6, 0, 1);
+      let col = mix(base, P.gold, Math.pow(t, 0.85));
+      if (q.inv) col = mix(col, P.blue, 0.7);
+      ctx.fillStyle = col; ctx.strokeStyle = rgba(P.bg, 0.5); ctx.lineWidth = 0.6;
+      ctx.beginPath(); ctx.moveTo(q.a[0], q.a[1]); ctx.lineTo(q.b[0], q.b[1]); ctx.lineTo(q.c[0], q.c[1]); ctx.lineTo(q.d[0], q.d[1]); ctx.closePath();
+      ctx.fill(); ctx.stroke();
+    }
+    // the selected month as a bold curve
+    ctx.strokeStyle = P.text; ctx.lineWidth = 2.4; ctx.lineJoin = "round";
+    ctx.beginPath(); V[T.sel].forEach((p, j) => (j ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]))); ctx.stroke();
+    // labels along the nearest edges
+    ctx.font = `500 11px ${P.body}`; ctx.fillStyle = P.muted;
+    const nearI = V[0][5][2] > V[N - 1][5][2] ? 0 : N - 1;
+    ctx.textAlign = "center";
+    for (const j of [0, 3, 4, 8, 10]) { const p = V[nearI][j]; ctx.fillText(MATS[j], p[0], p[1] + 16); }
+    const nearJ = V[6][0][2] > V[6][MATS.length - 1][2] ? 0 : MATS.length - 1;
+    for (let y = 2019; y <= 2026; y++) {
+      const i = (y - 2019) * 12; if (i >= N) continue;
+      const p = V[i][nearJ], off = p[0] > cx ? 12 : -12;
+      ctx.textAlign = off > 0 ? "left" : "right"; ctx.fillText(y, p[0] + off, p[1] + 4);
+    }
+    ctx.textAlign = "left";
+  }
+
+  /* ----- view manager ----- */
+  const VIEWS = { helix: { frame: helixFrame }, layers: { enter: () => { if (!Ly.seen) { Ly.seen = true; scene.style.setProperty("--gap", "14px"); setTimeout(() => tweenGap(110), 250); } } }, terrain: { enter: () => { T.g0 = null; } } };
+  const select = $("view-select");
+  let current = "helix";
+  function setView(name, save) {
+    if (!VIEWS[name]) name = "helix";
+    current = name;
+    for (const k of Object.keys(VIEWS)) $("v-" + k).classList.toggle("on", k === name);
+    select.value = name;
+    if (VIEWS[name].enter) VIEWS[name].enter();
+    if (save) { try { localStorage.setItem("labView", name); } catch {} }
+  }
+  select.addEventListener("change", () => setView(select.value, true));
+  VIEWS.terrain.frame = terrainFrame;
+
+  /* ----- themes, shared with the other pages ----- */
+  const THEMES = { ink: ["#0c1929", "#e8b24a"], ledger: ["#edf0ee", "#2540d9"], terminal: ["#0b0c0c", "#ffa028"], pink: ["#fff1e5", "#990f3d"],
+    weekly: ["#dde8ee", "#e3120b"], phosphor: ["#040b06", "#3dff7a"], blueprint: ["#1436c9", "#ffd84d"] };
+  const LIGHT = ["ledger", "pink", "weekly"];
+  const themeSel = $("theme-select"), swatch = $("swatch"), themeColor = $("theme-color");
+  function setTheme(name, save) {
+    if (!THEMES[name]) name = "ink";
+    root.dataset.look = name;
+    root.style.colorScheme = LIGHT.includes(name) ? "light" : "dark";
+    themeSel.value = name;
+    themeColor.content = THEMES[name][0];
+    swatch.style.setProperty("--sw-bg", THEMES[name][0]);
+    swatch.style.setProperty("--sw-ac", THEMES[name][1]);
+    readPalette();
+    if (save) { try { localStorage.setItem("theme", name); } catch {} }
+  }
+  themeSel.addEventListener("change", () => setTheme(themeSel.value, true));
+  const safe = k => { try { return localStorage.getItem(k); } catch { return null; } };
+  setTheme(location.hash.slice(1) || safe("theme"), false);
+  readout();
+  setView(new URLSearchParams(location.search).get("view") || safe("labView") || "helix", false);
+  (function loop(now) {
+    requestAnimationFrame(loop);
+    const f = VIEWS[current].frame;
+    if (f && !document.hidden) f(now);
+  })(performance.now());
+})();
+</script>
+</body>
+</html>
