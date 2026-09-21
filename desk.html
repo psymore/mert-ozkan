@@ -184,6 +184,48 @@
     outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
+  .country { position: relative; display: inline-flex; border: 1px solid var(--border); border-radius: var(--radius-s); }
+  .country button {
+    padding: 6px 12px;
+    background: none;
+    border: 0;
+    color: var(--muted);
+    font: 500 0.8125rem var(--sans);
+    cursor: pointer;
+  }
+  .country button:hover { color: var(--ink); }
+  .country button[aria-pressed="true"] { color: var(--ink); box-shadow: inset 0 -2px 0 var(--accent); }
+  .soon {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    z-index: 5;
+    padding: 6px 12px;
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-s);
+    color: var(--ink);
+    font: 500 0.8125rem var(--sans);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .soon.show { opacity: 1; }
+  .soon.first { animation: soon-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  .soon.first::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background: var(--accent);
+    transform-origin: left;
+    animation: soon-line 0.9s 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  @keyframes soon-in { from { clip-path: inset(0 100% 0 0); transform: translateY(-5px); } to { clip-path: inset(0); transform: none; } }
+  @keyframes soon-line { from { transform: scaleX(0); } to { transform: scaleX(1); } }
   .pick { position: relative; display: inline-flex; align-items: center; }
   .pick select {
     appearance: none;
@@ -348,7 +390,7 @@
     .grid { grid-template-columns: minmax(0, 1fr); }
     .kpi .val { font-size: 1.5rem; }
   }
-  @media (prefers-reduced-motion: reduce) { .pulse { animation: none; } summary::after { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .pulse { animation: none; } summary::after { transition: none; } .soon.first, .soon.first::after { animation: none; } }
 </style>
 </head>
 <body>
@@ -361,6 +403,11 @@
     <div class="contact">
       <a class="email" href="mailto:mert.ozkan@example.com">mert.ozkan@example.com</a>
       <button class="btn" id="copy" type="button">Copy address</button>
+      <div class="country" role="group" aria-label="Country">
+        <button type="button" id="us" aria-pressed="true">US</button>
+        <button type="button" id="tr" aria-pressed="false" aria-describedby="soon">TR</button>
+        <span class="soon" id="soon" role="status"></span>
+      </div>
       <label class="pick" for="theme-select">
         <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Theme</span>
         <i id="swatch"></i>
@@ -376,6 +423,7 @@
         </select>
       </label>
       <a class="back" href="./">Original page</a>
+      <a class="back" href="card.html">Card</a>
       <span id="status" role="status" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"></span>
     </div>
   </header>
@@ -383,7 +431,7 @@
   <section class="strip" id="strip" aria-label="Latest readings"></section>
 
   <div class="toolbar">
-    <h2>US rates, inflation and jobs</h2>
+    <h2>United States: rates, inflation and jobs</h2>
     <div class="range" id="range" role="group" aria-label="Time range">
       <button type="button" data-y="1" aria-pressed="false">1Y</button>
       <button type="button" data-y="3" aria-pressed="false">3Y</button>
@@ -755,6 +803,21 @@ const D = {"asof":"2026-09-18","y10":[["2019-01-04",2.67],["2019-01-11",2.71],["
   const cell = (p, f, sfx = "%") => (p ? p.v.toFixed(f) + sfx : "–");
   $("tbl").innerHTML = "<thead><tr><th>Month</th><th>10Y</th><th>2Y</th><th>10Y−2Y</th><th>Fed funds</th><th>CPI y/y</th><th>Unemployment</th></tr></thead><tbody>" +
     months.slice().reverse().map(t => `<tr><td>${mon(t)}</td><td>${cell(monthEnd(D.y10, t), 2)}</td><td>${cell(monthEnd(D.y2, t), 2)}</td><td>${cell(monthEnd(D.spread, t), 2, "")}</td><td>${cell(monthEnd(D.ff, t), 2)}</td><td>${cell(monthEnd(D.cpi, t), 2)}</td><td>${cell(monthEnd(D.un, t), 1)}</td></tr>`).join("") + "</tbody>";
+
+
+  /* Country switch: US is what the data is; TR is not built yet, so it answers with a note that animates the first time */
+  const trBtn = document.getElementById("tr"), soon = document.getElementById("soon");
+  let soonSeen = false, soonTimer;
+  trBtn.addEventListener("click", () => {
+    clearTimeout(soonTimer);
+    soon.classList.remove("show", "first");
+    void soon.offsetWidth;
+    soon.textContent = "Coming soon";
+    if (!soonSeen) soon.classList.add("first");
+    soonSeen = true;
+    soon.classList.add("show");
+    soonTimer = setTimeout(() => { soon.classList.remove("show"); soon.textContent = ""; }, 2800);
+  });
 
   /* Copy address */
   const copyBtn = $("copy"), status = $("status"), address = "mert.ozkan@example.com";

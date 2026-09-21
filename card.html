@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#0c1929" id="theme-color">
+<title>Mert Özkan</title>
+<meta name="description" content="Mert Özkan. mert.ozkan@example.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..600;1,6..96,400..600&family=Hanken+Grotesk:wght@400;500&family=Schibsted+Grotesk:wght@400..700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..600&family=Libre+Franklin:wght@400..800&family=JetBrains+Mono:wght@400..600&family=Archivo:wght@400..800&display=swap" rel="stylesheet">
+<script>try{var t=location.hash.slice(1)||localStorage.getItem("theme");if(t)document.documentElement.dataset.look=t}catch(e){}</script>
+<style>
+  :root {
+    --bg: #0c1929;
+    --grid: #1d3149;
+    --text: #e7ecf3;
+    --muted: #8b9cb2;
+    --gold: #e8b24a;
+    --blue: #7da2d3;
+    --teal: #66b5a8;
+    --lilac: #b4a4d6;
+    --gutter: clamp(20px, 5vw, 64px);
+
+    /* Type and line character, overridden per theme */
+    --body: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --display: "Bodoni Moda", Didot, "Bodoni 72", Georgia, serif;
+    --name-size: clamp(3rem, 13vw, 10rem);
+    --name-weight: 400;
+    --name-tracking: -0.03em;
+    --name-opsz: "opsz" 96;
+    --email-size: clamp(1.5rem, 3.4vw, 2.75rem);
+    --email-style: italic;
+    --email-weight: 400;
+    --email-tracking: -0.01em;
+    --line-w: 1.5px;
+    --line-w-main: 2.5px;
+    --grid-dash: none;
+  }
+
+  /* Ledger: pale stone paper, grotesk type, cobalt signal line */
+  :root[data-look="ledger"] {
+    --bg: #edf0ee;
+    --grid: #d2d9d6;
+    --text: #0f1e1b;
+    --muted: #52625c;
+    --gold: #2540d9;
+    --blue: #7e5f45;
+    --teal: #1f7466;
+    --lilac: #74468a;
+    --display: "Schibsted Grotesk", "Hanken Grotesk", system-ui, sans-serif;
+    --name-size: clamp(3rem, 12.5vw, 9.5rem);
+    --name-weight: 600;
+    --name-tracking: -0.05em;
+    --name-opsz: normal;
+    --email-size: clamp(1.4rem, 3vw, 2.4rem);
+    --email-style: normal;
+    --email-weight: 500;
+    --email-tracking: -0.025em;
+    --line-w: 1.5px;
+    --line-w-main: 3px;
+  }
+
+  /* Terminal: black screen, amber signal, monospace, sharp straight segments */
+  :root[data-look="terminal"] {
+    --bg: #0b0c0c;
+    --grid: #262723;
+    --text: #e8e6df;
+    --muted: #8f8d83;
+    --gold: #ffa028;
+    --blue: #4db8d6;
+    --teal: #6dbe7b;
+    --lilac: #e0708c;
+    --body: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --display: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --name-size: clamp(2.4rem, 10vw, 8rem);
+    --name-weight: 500;
+    --name-tracking: -0.05em;
+    --name-opsz: normal;
+    --email-size: clamp(1rem, 2.4vw, 1.9rem);
+    --email-style: normal;
+    --email-weight: 500;
+    --email-tracking: -0.02em;
+    --line-w: 1.25px;
+    --line-w-main: 2px;
+    --grid-dash: 2 5;
+  }
+
+  /* Pink paper: salmon newsprint, serif headline, claret signal (after the FT) */
+  :root[data-look="pink"] {
+    --bg: #fff1e5;
+    --grid: #ead9c9;
+    --text: #33302e;
+    --muted: #665f5a;
+    --gold: #990f3d;
+    --blue: #0f5499;
+    --teal: #0d7680;
+    --lilac: #593380;
+    --display: "Newsreader", Georgia, "Times New Roman", serif;
+    --name-size: clamp(3rem, 13vw, 10rem);
+    --name-weight: 500;
+    --name-tracking: -0.035em;
+    --name-opsz: "opsz" 72;
+    --email-size: clamp(1.5rem, 3.4vw, 2.75rem);
+    --email-style: italic;
+    --email-weight: 400;
+    --line-w: 1.5px;
+    --line-w-main: 2.75px;
+  }
+
+  /* Weekly: cool blue-grey chart paper, heavy sans, red signal, straight lines (after The Economist) */
+  :root[data-look="weekly"] {
+    --bg: #dde8ee;
+    --grid: #bccbd4;
+    --text: #0d1417;
+    --muted: #4a5a63;
+    --gold: #e3120b;
+    --blue: #006ba2;
+    --teal: #1f7a6d;
+    --lilac: #9a607f;
+    --display: "Libre Franklin", "Hanken Grotesk", system-ui, sans-serif;
+    --name-size: clamp(3rem, 12vw, 9.25rem);
+    --name-weight: 800;
+    --name-tracking: -0.055em;
+    --name-opsz: normal;
+    --email-size: clamp(1.4rem, 3vw, 2.4rem);
+    --email-style: normal;
+    --email-weight: 600;
+    --email-tracking: -0.03em;
+    --line-w: 1.75px;
+    --line-w-main: 3px;
+  }
+
+  /* Phosphor: green screen on black, straight segments, dotted grid (after the trading terminal) */
+  :root[data-look="phosphor"] {
+    --bg: #040b06;
+    --grid: #15281a;
+    --text: #c9f2d2;
+    --muted: #6f9a7b;
+    --gold: #3dff7a;
+    --blue: #4fd6c8;
+    --teal: #9bd15b;
+    --lilac: #ff6b6b;
+    --body: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --display: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --name-size: clamp(2.3rem, 9.5vw, 7.5rem);
+    --name-weight: 600;
+    --name-tracking: -0.06em;
+    --name-opsz: normal;
+    --email-size: clamp(1rem, 2.3vw, 1.8rem);
+    --email-style: normal;
+    --email-weight: 500;
+    --email-tracking: -0.03em;
+    --line-w: 1.25px;
+    --line-w-main: 2px;
+    --grid-dash: 1 5;
+  }
+
+  /* Blueprint: cobalt drafting sheet, white ink, yellow signal */
+  :root[data-look="blueprint"] {
+    --bg: #1436c9;
+    --grid: #3556da;
+    --text: #f3f6ff;
+    --muted: #bac7f7;
+    --gold: #ffd84d;
+    --blue: #ffffff;
+    --teal: #8fe3ff;
+    --lilac: #ffb3d1;
+    --display: "Archivo", "Hanken Grotesk", system-ui, sans-serif;
+    --name-size: clamp(3rem, 12.5vw, 9.5rem);
+    --name-weight: 700;
+    --name-tracking: -0.045em;
+    --name-opsz: normal;
+    --email-size: clamp(1.4rem, 3vw, 2.4rem);
+    --email-style: normal;
+    --email-weight: 600;
+    --email-tracking: -0.025em;
+    --line-w: 1.5px;
+    --line-w-main: 3px;
+    --grid-dash: 6 6;
+  }
+
+
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  body {
+    margin: 0;
+    min-height: 100svh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+  header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 4px 20px;
+    padding: clamp(16px, 3vh, 28px) var(--gutter) 0;
+  }
+  .pick { position: relative; display: inline-flex; align-items: center; }
+  .pick select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding: 8px 36px 8px 38px;
+    background: transparent;
+    border: 1px solid var(--grid);
+    border-radius: 0;
+    color: var(--text);
+    font: 500 0.875rem var(--body);
+    cursor: pointer;
+  }
+  .pick select:hover { border-color: var(--muted); }
+  .pick select option { background: var(--bg); color: var(--text); }
+  .pick i {
+    position: absolute;
+    left: 12px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--sw-bg);
+    box-shadow: inset 0 0 0 1px var(--muted), inset 0 0 0 4px var(--sw-bg), inset 0 0 0 14px var(--sw-ac);
+    pointer-events: none;
+  }
+  .pick::after {
+    content: "";
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    border: solid var(--muted);
+    border-width: 0 1.5px 1.5px 0;
+    transform: translateY(-70%) rotate(45deg);
+    pointer-events: none;
+  }
+  header a {
+    padding: 8px 0 8px 20px;
+    border-left: 1px solid var(--grid);
+    color: var(--muted);
+    font: 500 0.875rem var(--body);
+    text-decoration: none;
+  }
+  header a:hover { color: var(--text); }
+
+  main {
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: clamp(20px, 4vh, 36px);
+    padding: clamp(20px, 4vh, 48px) var(--gutter);
+  }
+
+  /* The card: a business-card ratio that tilts toward the pointer and flips */
+  .stage { width: min(100%, 640px); perspective: 1400px; container-type: inline-size; }
+  .tilt {
+    transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition: transform 0.25s ease-out;
+    transform-style: preserve-3d;
+  }
+  .card {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 7 / 4;
+    transform-style: preserve-3d;
+    transition: transform 0.9s cubic-bezier(0.3, 0.8, 0.2, 1);
+    cursor: pointer;
+  }
+  .card.flipped { transform: rotateY(180deg); }
+  .face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 7cqw 7.5cqw;
+    background: color-mix(in srgb, var(--text) 7%, var(--bg));
+    border: 1px solid var(--grid);
+    box-shadow: 0 1px 0 color-mix(in srgb, var(--text) 10%, transparent) inset, 0 30px 60px -24px rgba(0, 0, 0, 0.45), 0 8px 18px -10px rgba(0, 0, 0, 0.35);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    overflow: hidden;
+  }
+  .face.back { transform: rotateY(180deg); }
+  /* soft light that follows the pointer */
+  .face::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(60% 80% at var(--mx, 30%) var(--my, 20%), color-mix(in srgb, var(--text) 9%, transparent), transparent 70%);
+    pointer-events: none;
+  }
+  .mark { width: 9cqw; height: 3px; background: var(--gold); }
+  .name {
+    margin: 0;
+    font-family: var(--display);
+    font-weight: var(--name-weight);
+    font-size: clamp(1.5rem, 11.5cqw, 4.6rem);
+    line-height: 0.95;
+    letter-spacing: var(--name-tracking);
+    font-optical-sizing: auto;
+    font-variation-settings: var(--name-opsz);
+  }
+  .email {
+    display: inline-block;
+    margin-top: 3.2cqw;
+    color: var(--text);
+    font-family: var(--display);
+    font-style: var(--email-style);
+    font-weight: var(--email-weight);
+    font-size: clamp(0.85rem, 4.2cqw, 1.45rem);
+    letter-spacing: var(--email-tracking);
+    text-decoration: underline;
+    text-decoration-color: var(--gold);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.25em;
+  }
+  .email:hover { color: var(--gold); }
+  .hint {
+    position: absolute;
+    right: 7.5cqw;
+    bottom: 7cqw;
+    color: var(--muted);
+    font: 500 max(0.7rem, 2.4cqw) var(--body);
+  }
+
+  /* Back: the real 10-year yield as the mark */
+  .back .top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; position: relative; }
+  .back .label { color: var(--muted); font: 500 max(0.72rem, 2.6cqw) var(--body); }
+  .back .value {
+    font-family: var(--display);
+    font-weight: var(--name-weight);
+    font-size: clamp(1.4rem, 9cqw, 3.4rem);
+    letter-spacing: var(--name-tracking);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .spark { position: relative; flex: 1; min-height: 0; margin-top: 3cqw; }
+  .spark svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .spark path {
+    fill: none;
+    stroke: var(--gold);
+    stroke-width: 2.5;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+  /* the line is revealed left to right by a wipe */
+  .spark svg { clip-path: inset(-20% 100% -20% 0); }
+  .card.flipped .spark svg { animation: wipe 1.8s 0.5s cubic-bezier(0.55, 0.05, 0.2, 1) forwards; }
+  .spark .base { stroke: var(--grid); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .spark i {
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    margin: -4.5px 0 0 -4.5px;
+    border-radius: 50%;
+    background: var(--gold);
+    opacity: 0;
+  }
+  .card.flipped .spark i { animation: fade 0.4s 2.2s forwards; }
+  @keyframes wipe { to { clip-path: inset(-20% -2% -20% 0); } }
+  @keyframes fade { to { opacity: 1; } }
+
+  .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 12px; }
+  .actions button, .actions a {
+    padding: 10px 16px;
+    background: transparent;
+    border: 1px solid var(--grid);
+    color: var(--text);
+    font: 500 0.875rem var(--body);
+    text-decoration: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+  .actions button:hover, .actions a:hover { border-color: var(--gold); color: var(--gold); }
+  a:focus-visible, button:focus-visible, select:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 4px;
+  }
+  footer { padding: 4px var(--gutter) clamp(20px, 3.5vh, 32px); color: var(--muted); font-size: 0.8125rem; text-align: center; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tilt, .card { transition: none; }
+    .spark svg { clip-path: none; animation: none !important; }
+    .spark i { opacity: 1; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <label class="pick" for="theme-select">
+      <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Theme</span>
+      <i id="swatch"></i>
+      <select id="theme-select">
+        <option value="ink">Ink</option>
+        <option value="ledger">Ledger</option>
+        <option value="terminal">Terminal</option>
+        <option value="pink">Pink paper</option>
+        <option value="weekly">Weekly</option>
+        <option value="phosphor">Phosphor</option>
+        <option value="blueprint">Blueprint</option>
+      </select>
+    </label>
+    <a href="./">Original page</a>
+  </header>
+
+  <main>
+    <div class="stage" id="stage">
+      <div class="tilt" id="tilt">
+        <div class="card" id="card">
+          <section class="face front" id="front" aria-label="Contact card, front">
+            <div class="mark"></div>
+            <div>
+              <h1 class="name">Mert Özkan</h1>
+              <a class="email" href="mailto:mert.ozkan@example.com">mert.ozkan@example.com</a>
+            </div>
+            <span class="hint" aria-hidden="true">Flip</span>
+          </section>
+          <section class="face back" id="back" aria-label="Contact card, back: US 10-year Treasury yield" inert>
+            <div class="top">
+              <span class="value" id="val"></span>
+              <span class="label">US 10-year Treasury yield<br><span id="range"></span></span>
+            </div>
+            <div class="spark">
+              <svg id="spark" viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                <line class="base" x1="0" x2="100" y1="39.5" y2="39.5"/>
+                <path id="line" pathLength="1"/>
+              </svg>
+              <i id="dot"></i>
+            </div>
+            <span class="hint" aria-hidden="true">Flip</span>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="button" id="flip" aria-pressed="false">Flip card</button>
+      <button type="button" id="copy">Copy email</button>
+      <button type="button" id="save">Save contact</button>
+    </div>
+    <span id="status" role="status" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"></span>
+  </main>
+
+  <footer>Yield: FRED, Federal Reserve Bank of St. Louis (DGS10), monthly, Jan 2019 to Sep 2026.</footer>
+
+<script>
+(() => {
+  const Y10 = [2.63,2.73,2.41,2.51,2.14,2.0,2.02,1.5,1.68,1.69,1.78,1.92,1.51,1.13,0.7,0.64,0.65,0.66,0.55,0.72,0.69,0.88,0.84,0.93,1.11,1.44,1.74,1.65,1.58,1.45,1.24,1.3,1.52,1.55,1.43,1.52,1.79,1.83,2.32,2.89,2.85,2.98,2.67,3.15,3.83,4.1,3.68,3.88,3.52,3.92,3.48,3.44,3.64,3.81,3.97,4.09,4.59,4.88,4.37,3.88,3.99,4.25,4.2,4.69,4.51,4.36,4.09,3.91,3.81,4.28,4.18,4.58,4.58,4.24,4.23,4.17,4.41,4.24,4.37,4.23,4.16,4.11,4.02,4.18,4.26,3.97,4.3,4.4,4.45,4.44,4.75,4.75,5.01];   // 10-year Treasury yield, last reading of each month from Jan 2019
+  const $ = id => document.getElementById(id);
+  const address = "mert.ozkan@example.com";
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+
+  // Back face: the yield line, scaled to its own range
+  const lo = Math.min(...Y10), hi = Math.max(...Y10), n = Y10.length;
+  const pts = Y10.map((v, i) => [(i / (n - 1)) * 100, 36 - ((v - lo) / (hi - lo)) * 32]);
+  $("line").setAttribute("d", "M" + pts.map(p => p[0].toFixed(2) + "," + p[1].toFixed(2)).join("L"));
+  $("dot").style.left = "100%";
+  $("dot").style.top = (pts[n - 1][1] / 40) * 100 + "%";
+  $("val").textContent = Y10[n - 1].toFixed(2) + "%";
+  $("range").textContent = "Jan 2019 to Sep 2026";
+
+  // Flip
+  const card = $("card"), flipBtn = $("flip"), front = $("front"), back = $("back");
+  function flip(force) {
+    const on = typeof force === "boolean" ? force : !card.classList.contains("flipped");
+    card.classList.toggle("flipped", on);
+    flipBtn.setAttribute("aria-pressed", String(on));
+    front.inert = on; back.inert = !on;
+  }
+  flipBtn.addEventListener("click", () => flip());
+  card.addEventListener("click", e => { if (!e.target.closest("a")) flip(); });
+
+  // Tilt toward the pointer, with a soft light on the faces
+  const stage = $("stage"), tilt = $("tilt");
+  stage.addEventListener("pointermove", e => {
+    if (reduce.matches || e.pointerType === "touch") return;
+    const r = stage.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+    tilt.style.setProperty("--ry", ((x - 0.5) * 12).toFixed(2) + "deg");
+    tilt.style.setProperty("--rx", ((0.5 - y) * 9).toFixed(2) + "deg");
+    for (const f of [front, back]) { f.style.setProperty("--mx", (f === back ? 100 - x * 100 : x * 100).toFixed(0) + "%"); f.style.setProperty("--my", (y * 100).toFixed(0) + "%"); }
+  });
+  stage.addEventListener("pointerleave", () => { tilt.style.setProperty("--rx", "0deg"); tilt.style.setProperty("--ry", "0deg"); });
+
+  // Copy and save
+  const status = $("status");
+  let timer;
+  const say = (btn, label, msg) => {
+    const old = btn.dataset.label || btn.textContent; btn.dataset.label = old;
+    btn.textContent = label; status.textContent = msg;
+    clearTimeout(timer);
+    timer = setTimeout(() => { btn.textContent = old; status.textContent = ""; }, 2000);
+  };
+  $("copy").addEventListener("click", async e => {
+    try { await navigator.clipboard.writeText(address); }
+    catch { const t = document.createElement("textarea"); t.value = address; document.body.appendChild(t); t.select();
+      try { document.execCommand("copy"); } finally { t.remove(); } }
+    say(e.currentTarget, "Copied", "Email address copied");
+  });
+  $("save").addEventListener("click", e => {
+    const vcf = ["BEGIN:VCARD", "VERSION:3.0", "N:Özkan;Mert;;;", "FN:Mert Özkan", "EMAIL;TYPE=INTERNET:" + address, "END:VCARD"].join("\r\n") + "\r\n";
+    const url = URL.createObjectURL(new Blob([vcf], { type: "text/vcard;charset=utf-8" }));
+    const a = document.createElement("a");
+    a.href = url; a.download = "Mert-Ozkan.vcf"; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    say(e.currentTarget, "Saved", "Contact file downloaded");
+  });
+
+  // Themes, shared with the other pages through localStorage
+  const THEMES = { ink: ["#0c1929", "#e8b24a"], ledger: ["#edf0ee", "#2540d9"], terminal: ["#0b0c0c", "#ffa028"], pink: ["#fff1e5", "#990f3d"],
+    weekly: ["#dde8ee", "#e3120b"], phosphor: ["#040b06", "#3dff7a"], blueprint: ["#1436c9", "#ffd84d"] };
+  const LIGHT = ["ledger", "pink", "weekly"];
+  const root = document.documentElement, select = $("theme-select"), swatch = $("swatch"), themeColor = $("theme-color");
+  function setTheme(name, save) {
+    if (!THEMES[name]) name = "ink";
+    root.dataset.look = name;
+    root.style.colorScheme = LIGHT.includes(name) ? "light" : "dark";
+    select.value = name;
+    themeColor.content = THEMES[name][0];
+    swatch.style.setProperty("--sw-bg", THEMES[name][0]);
+    swatch.style.setProperty("--sw-ac", THEMES[name][1]);
+    if (save) { try { localStorage.setItem("theme", name); } catch {} }
+  }
+  select.addEventListener("change", () => setTheme(select.value, true));
+  setTheme((() => { try { return location.hash.slice(1) || localStorage.getItem("theme"); } catch { return null; } })(), false);
+})();
+</script>
+</body>
+</html>

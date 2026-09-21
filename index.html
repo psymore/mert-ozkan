@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..600;1,6..96,400..600&family=Hanken+Grotesk:wght@400;500&family=Schibsted+Grotesk:wght@400..700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..600&family=Libre+Franklin:wght@400..800&family=JetBrains+Mono:wght@400..600&family=Archivo:wght@400..800&display=swap" rel="stylesheet">
+<script>try{var t=location.hash.slice(1)||localStorage.getItem("theme");if(t)document.documentElement.dataset.look=t}catch(e){}</script>
 <style>
   :root {
     --bg: #0c1929;
@@ -200,9 +201,52 @@
   .themes {
     display: flex;
     justify-content: flex-end;
+    flex-wrap: wrap;
     gap: 4px 20px;
     margin-bottom: clamp(12px, 3vh, 32px);
   }
+  .country { position: relative; display: inline-flex; border: 1px solid var(--grid); }
+  .country button {
+    padding: 8px 14px;
+    background: none;
+    border: 0;
+    color: var(--muted);
+    font: 500 0.875rem var(--body);
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+  .country button:hover { color: var(--text); }
+  .country button[aria-pressed="true"] { color: var(--text); box-shadow: inset 0 -2px 0 var(--gold); }
+  .soon {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    z-index: 3;
+    padding: 6px 12px;
+    background: var(--bg);
+    border: 1px solid var(--gold);
+    color: var(--text);
+    font: 500 0.8125rem var(--body);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .soon.show { opacity: 1; }
+  .soon.first { animation: soon-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  .soon.first::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background: var(--gold);
+    transform-origin: left;
+    animation: soon-line 0.9s 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  @keyframes soon-in { from { clip-path: inset(0 100% 0 0); transform: translateY(-5px); } to { clip-path: inset(0); transform: none; } }
+  @keyframes soon-line { from { transform: scaleX(0); } to { transform: scaleX(1); } }
   .themes { align-items: center; }
   .pick { position: relative; display: inline-flex; align-items: center; }
   .pick select {
@@ -414,6 +458,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .soon.first, .soon.first::after { animation: none; }
     .series path { animation: none; stroke-dashoffset: 0; }
     .series-label, .now-dot, .contact { animation: none; opacity: 1; }
     .now-ring { animation: none; opacity: 0; }
@@ -424,6 +469,11 @@
 <body>
   <header>
     <nav class="themes" id="themes" aria-label="Theme">
+      <div class="country" role="group" aria-label="Country">
+        <button type="button" id="us" aria-pressed="true">US</button>
+        <button type="button" id="tr" aria-pressed="false" aria-describedby="soon">TR</button>
+        <span class="soon" id="soon" role="status"></span>
+      </div>
       <label class="pick" for="theme-select">
         <span class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Theme</span>
         <i id="swatch"></i>
@@ -438,6 +488,7 @@
         </select>
       </label>
       <a href="desk.html">Data desk</a>
+      <a href="card.html">Card</a>
     </nav>
     <h1>Mert Özkan</h1>
     <p class="intro">I follow the economy closely: interest rates, inflation, jobs and currencies, and what they mean for markets. If you want to talk it through, write to me.</p>
@@ -454,7 +505,7 @@
 
   <footer>
     <span>© 2026 Mert Özkan</span>
-    <span>Source: FRED, Federal Reserve Bank of St. Louis (CPIAUCSL, UNRATE, DTWEXBGS, DGS10). Each line is scaled to its own range; latest values at right. October 2025 CPI and jobs data were not published, so those lines bridge that month.</span>
+    <span>United States. Source: FRED, Federal Reserve Bank of St. Louis (CPIAUCSL, UNRATE, DTWEXBGS, DGS10). Each line is scaled to its own range; latest values at right. October 2025 CPI and jobs data were not published, so those lines bridge that month.</span>
   </footer>
 
 <script>
@@ -526,7 +577,7 @@
   const tagDot = el("circle", { r: 4.5 }, tag);
   const tagTxt = el("text", { "text-anchor": "middle" }, tag);
   svg.setAttribute("role", "img");
-  svg.setAttribute("aria-label", "Line chart, " + monthLabel(0) + " to " + monthLabel(N - 1) + ", each line scaled to its own range. Latest: " +
+  svg.setAttribute("aria-label", "United States. Line chart, " + monthLabel(0) + " to " + monthLabel(N - 1) + ", each line scaled to its own range. Latest: " +
     series.map(s => s.name + " " + valueText(s, s.pts[s.pts.length - 1])).join(", ") + ".");
 
   let geo = [];
@@ -662,6 +713,20 @@
     status.textContent = "Email address copied";
     clearTimeout(timer);
     timer = setTimeout(() => { copyBtn.textContent = "Copy address"; status.textContent = ""; }, 2000);
+  });
+
+  /* Country switch: US is what the data is; TR is not built yet, so it answers with a note that animates the first time */
+  const trBtn = document.getElementById("tr"), soon = document.getElementById("soon");
+  let soonSeen = false, soonTimer;
+  trBtn.addEventListener("click", () => {
+    clearTimeout(soonTimer);
+    soon.classList.remove("show", "first");
+    void soon.offsetWidth;
+    soon.textContent = "Coming soon";
+    if (!soonSeen) soon.classList.add("first");
+    soonSeen = true;
+    soon.classList.add("show");
+    soonTimer = setTimeout(() => { soon.classList.remove("show"); soon.textContent = ""; }, 2800);
   });
 })();
 </script>
