@@ -9,7 +9,7 @@
 <meta name="description" content="Mert Özkan follows economic trends and what they mean for markets. Write to mert.ozkan@example.com.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..600;1,6..96,400..600&family=Hanken+Grotesk:wght@400;500&family=Schibsted+Grotesk:wght@400..700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..600;1,6..96,400..600&family=Hanken+Grotesk:wght@400;500&family=Schibsted+Grotesk:wght@400..700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..600&family=Libre+Franklin:wght@400..800&family=JetBrains+Mono:wght@400..600&family=Archivo:wght@400..800&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #0c1929;
@@ -86,6 +86,100 @@
     --grid-dash: 2 5;
   }
 
+  /* Pink paper: salmon newsprint, serif headline, claret signal (after the FT) */
+  :root[data-look="pink"] {
+    --bg: #fff1e5;
+    --grid: #ead9c9;
+    --text: #33302e;
+    --muted: #665f5a;
+    --gold: #990f3d;
+    --blue: #0f5499;
+    --teal: #0d7680;
+    --lilac: #593380;
+    --display: "Newsreader", Georgia, "Times New Roman", serif;
+    --name-size: clamp(3rem, 13vw, 10rem);
+    --name-weight: 500;
+    --name-tracking: -0.035em;
+    --name-opsz: "opsz" 72;
+    --email-size: clamp(1.5rem, 3.4vw, 2.75rem);
+    --email-style: italic;
+    --email-weight: 400;
+    --line-w: 1.5px;
+    --line-w-main: 2.75px;
+  }
+
+  /* Weekly: cool blue-grey chart paper, heavy sans, red signal, straight lines (after The Economist) */
+  :root[data-look="weekly"] {
+    --bg: #dde8ee;
+    --grid: #bccbd4;
+    --text: #0d1417;
+    --muted: #4a5a63;
+    --gold: #e3120b;
+    --blue: #006ba2;
+    --teal: #1f7a6d;
+    --lilac: #9a607f;
+    --display: "Libre Franklin", "Hanken Grotesk", system-ui, sans-serif;
+    --name-size: clamp(3rem, 12vw, 9.25rem);
+    --name-weight: 800;
+    --name-tracking: -0.055em;
+    --name-opsz: normal;
+    --email-size: clamp(1.4rem, 3vw, 2.4rem);
+    --email-style: normal;
+    --email-weight: 600;
+    --email-tracking: -0.03em;
+    --line-w: 1.75px;
+    --line-w-main: 3px;
+  }
+
+  /* Phosphor: green screen on black, straight segments, dotted grid (after the trading terminal) */
+  :root[data-look="phosphor"] {
+    --bg: #040b06;
+    --grid: #15281a;
+    --text: #c9f2d2;
+    --muted: #6f9a7b;
+    --gold: #3dff7a;
+    --blue: #4fd6c8;
+    --teal: #9bd15b;
+    --lilac: #ff6b6b;
+    --body: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --display: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --name-size: clamp(2.3rem, 9.5vw, 7.5rem);
+    --name-weight: 600;
+    --name-tracking: -0.06em;
+    --name-opsz: normal;
+    --email-size: clamp(1rem, 2.3vw, 1.8rem);
+    --email-style: normal;
+    --email-weight: 500;
+    --email-tracking: -0.03em;
+    --line-w: 1.25px;
+    --line-w-main: 2px;
+    --grid-dash: 1 5;
+  }
+
+  /* Blueprint: cobalt drafting sheet, white ink, yellow signal */
+  :root[data-look="blueprint"] {
+    --bg: #1436c9;
+    --grid: #3556da;
+    --text: #f3f6ff;
+    --muted: #bac7f7;
+    --gold: #ffd84d;
+    --blue: #ffffff;
+    --teal: #8fe3ff;
+    --lilac: #ffb3d1;
+    --display: "Archivo", "Hanken Grotesk", system-ui, sans-serif;
+    --name-size: clamp(3rem, 12.5vw, 9.5rem);
+    --name-weight: 700;
+    --name-tracking: -0.045em;
+    --name-opsz: normal;
+    --email-size: clamp(1.4rem, 3vw, 2.4rem);
+    --email-style: normal;
+    --email-weight: 600;
+    --email-tracking: -0.025em;
+    --line-w: 1.5px;
+    --line-w-main: 3px;
+    --grid-dash: 6 6;
+  }
+
   * { box-sizing: border-box; }
   html { background: var(--bg); transition: background-color 0.4s ease; }
   body {
@@ -109,18 +203,34 @@
     gap: 4px 20px;
     margin-bottom: clamp(12px, 3vh, 32px);
   }
-  .themes button {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 0;
-    background: none;
-    border: 0;
-    border-bottom: 1px solid transparent;
-    color: var(--muted);
+  .themes { align-items: center; }
+  .pick { position: relative; display: inline-flex; align-items: center; }
+  .pick select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding: 8px 36px 8px 38px;
+    background: transparent;
+    border: 1px solid var(--grid);
+    border-radius: 0;
+    color: var(--text);
     font: 500 0.875rem var(--body);
     cursor: pointer;
-    transition: color 0.2s ease, border-color 0.2s ease;
+    transition: border-color 0.2s ease;
+  }
+  .pick select:hover { border-color: var(--muted); }
+  .pick select option { background: var(--bg); color: var(--text); }
+  .pick i { position: absolute; left: 12px; pointer-events: none; }
+  .pick::after {
+    content: "";
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    border: solid var(--muted);
+    border-width: 0 1.5px 1.5px 0;
+    transform: translateY(-70%) rotate(45deg);
+    pointer-events: none;
   }
   .themes a {
     padding: 8px 0 8px 20px;
@@ -130,8 +240,6 @@
     text-decoration: none;
   }
   .themes a:hover { color: var(--text); }
-  .themes button:hover { color: var(--text); }
-  .themes button[aria-pressed="true"] { color: var(--text); border-bottom-color: var(--gold); }
   .themes i {
     width: 14px;
     height: 14px;
@@ -252,7 +360,7 @@
   }
   .copy:hover { color: var(--text); }
 
-  a:focus-visible, button:focus-visible {
+  a:focus-visible, button:focus-visible, select:focus-visible {
     outline: 2px solid var(--gold);
     outline-offset: 4px;
     border-radius: 2px;
@@ -293,9 +401,19 @@
 <body>
   <header>
     <nav class="themes" id="themes" aria-label="Theme">
-      <button type="button" data-look="ink" aria-pressed="true" style="--sw-bg:#0c1929;--sw-ac:#e8b24a"><i></i>Ink</button>
-      <button type="button" data-look="ledger" aria-pressed="false" style="--sw-bg:#edf0ee;--sw-ac:#2540d9"><i></i>Ledger</button>
-      <button type="button" data-look="terminal" aria-pressed="false" style="--sw-bg:#0b0c0c;--sw-ac:#ffa028"><i></i>Terminal</button>
+      <label class="pick" for="theme-select">
+        <span class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Theme</span>
+        <i id="swatch"></i>
+        <select id="theme-select">
+          <option value="ink">Ink</option>
+          <option value="ledger">Ledger</option>
+          <option value="terminal">Terminal</option>
+          <option value="pink">Pink paper</option>
+          <option value="weekly">Weekly</option>
+          <option value="phosphor">Phosphor</option>
+          <option value="blueprint">Blueprint</option>
+        </select>
+      </label>
       <a href="desk.html">Data desk</a>
     </nav>
     <h1>Mert Özkan</h1>
@@ -453,22 +571,29 @@
 
   // Themes
   const THEMES = {
-    ink:      { shape: "smooth", color: "#0c1929" },
-    ledger:   { shape: "smooth", color: "#edf0ee" },
-    terminal: { shape: "linear", color: "#0b0c0c" }
+    ink:       { shape: "smooth", color: "#0c1929", ac: "#e8b24a" },
+    ledger:    { shape: "smooth", color: "#edf0ee", ac: "#2540d9", light: true },
+    terminal:  { shape: "linear", color: "#0b0c0c", ac: "#ffa028" },
+    pink:      { shape: "smooth", color: "#fff1e5", ac: "#990f3d", light: true },
+    weekly:    { shape: "linear", color: "#dde8ee", ac: "#e3120b", light: true },
+    phosphor:  { shape: "linear", color: "#040b06", ac: "#3dff7a" },
+    blueprint: { shape: "smooth", color: "#1436c9", ac: "#ffd84d" }
   };
   const root = document.documentElement;
-  const buttons = [...document.querySelectorAll("#themes button")];
+  const select = document.getElementById("theme-select");
+  const swatch = document.getElementById("swatch");
   const themeColor = document.getElementById("theme-color");
   const saved = (() => { try { return localStorage.getItem("theme"); } catch { return null; } })();
 
   function setTheme(name, replay) {
     if (!THEMES[name]) name = "ink";
     root.dataset.look = name;
-    root.style.colorScheme = name === "ledger" ? "light" : "dark";
+    root.style.colorScheme = THEMES[name].light ? "light" : "dark";
     if (themeColor) themeColor.content = THEMES[name].color;
     shape = THEMES[name].shape;
-    buttons.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.look === name)));
+    select.value = name;
+    swatch.style.setProperty("--sw-bg", THEMES[name].color);
+    swatch.style.setProperty("--sw-ac", THEMES[name].ac);
     layout();
     if (replay) {
       chart.classList.add("replay");
@@ -476,10 +601,10 @@
       chart.classList.remove("replay");
     }
   }
-  buttons.forEach(b => b.addEventListener("click", () => {
-    setTheme(b.dataset.look, true);
-    try { localStorage.setItem("theme", b.dataset.look); } catch {}
-  }));
+  select.addEventListener("change", () => {
+    setTheme(select.value, true);
+    try { localStorage.setItem("theme", select.value); } catch {}
+  });
   setTheme(location.hash.slice(1) || saved || "ink", false);
 
   // Copy address
