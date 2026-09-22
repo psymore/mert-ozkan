@@ -200,14 +200,23 @@
     padding: clamp(16px, 3vh, 28px) var(--gutter) 0;
   }
   /* Name on the left, one Settings button on the same line at the right */
-  .bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; container-type: inline-size; }
+  .bar {
+    --fs: min(var(--name-size), 14.5cqw, 24svh);              /* name size, shared with the button */
+    --gs: clamp(34px, calc(var(--fs) * 0.3), 46px);            /* button size follows the name */
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    container-type: inline-size;
+  }
   .bar h1 { min-width: 0; }
   .gear {
     flex: none;
     display: grid;
     place-items: center;
-    width: 46px;
-    height: 46px;
+    width: var(--gs);
+    height: var(--gs);
+    margin-top: var(--gear-y, calc(var(--fs) * 0.42 - var(--gs) / 2));   /* JS refines this to the exact cap-height centre */
     padding: 0;
     background: color-mix(in srgb, var(--text) 6%, var(--bg));
     border: 0;
@@ -232,7 +241,8 @@
     box-shadow: 0 0 0 2.5px var(--gold),
       0 6px 16px -8px color-mix(in srgb, var(--gold) 50%, transparent);
   }
-  .gear svg { width: 20px; height: 20px; }
+  .gear svg { width: calc(var(--gs) * 0.43); height: calc(var(--gs) * 0.43); }
+  .bl { display: inline-block; width: 0; height: 0; }
 
   /* Settings sheet */
   dialog.settings {
@@ -323,7 +333,7 @@
     pointer-events: none;
     background: radial-gradient(ellipse closest-side, color-mix(in srgb, var(--gold) 58%, transparent) 0%, color-mix(in srgb, var(--gold) 28%, transparent) 42%, transparent 100%);
     filter: blur(7px);
-    opacity: 0.75;
+    opacity: 0.5;
   }
   .soon.first { animation: soon-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
   .soon.first::before { animation: soon-halo 1.8s ease-out both; }
@@ -341,8 +351,8 @@
   @keyframes soon-in { from { clip-path: inset(-140px 100% -140px 0); transform: translateY(-5px); } to { clip-path: inset(-140px); transform: none; } }
   @keyframes soon-halo {
     0% { opacity: 0; transform: scale(0.55); }
-    35% { opacity: 1; transform: scale(1.14); }
-    100% { opacity: 0.75; transform: scale(1); }
+    35% { opacity: 0.75; transform: scale(1.1); }
+    100% { opacity: 0.5; transform: scale(1); }
   }
   @keyframes soon-line { from { transform: scaleX(0); } to { transform: scaleX(1); } }
   .pick { position: relative; display: inline-flex; align-items: center; }
@@ -380,11 +390,77 @@
     background: var(--sw-bg);
     box-shadow: inset 0 0 0 1px var(--muted), inset 0 0 0 4px var(--sw-bg), inset 0 0 0 14px var(--sw-ac);
   }
+  /* Theme picker */
+  .tbtn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 200px;
+    padding: 10px 40px 10px 12px;
+    background: transparent;
+    border: 1px solid var(--grid);
+    color: var(--text);
+    font: 500 0.875rem var(--body);
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+  }
+  .tbtn:hover { border-color: var(--muted); }
+  .tbtn::after {
+    content: "";
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    border: solid var(--muted);
+    border-width: 0 1.5px 1.5px 0;
+    transform: translateY(-70%) rotate(45deg);
+  }
+  .tbtn i, .opt i {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--sw-bg);
+    box-shadow: inset 0 0 0 1px var(--muted), inset 0 0 0 4px var(--sw-bg), inset 0 0 0 16px var(--sw-ac);
+  }
+  dialog.picker { width: min(380px, calc(100vw - 32px)); }
+  .opts { display: grid; border-top: 1px solid var(--grid); }
+  .opt {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 14px 2px;
+    background: none;
+    border: 0;
+    border-bottom: 1px solid var(--grid);
+    color: var(--text);
+    font: 500 1rem var(--body);
+    text-align: left;
+    cursor: pointer;
+    transition: color 0.2s ease, padding 0.25s ease;
+  }
+  .opt:hover { color: var(--gold); padding-left: 6px; }
+  .opt .dot {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 20px;
+    height: 20px;
+    margin-left: auto;
+    border: 2px solid var(--muted);
+    border-radius: 50%;
+  }
+  .opt[aria-checked="true"] .dot { border-color: var(--gold); }
+  .opt[aria-checked="true"] .dot::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--gold); }
   h1 {
     margin: 0;
     font-family: var(--display);
     font-weight: var(--name-weight);
-    font-size: min(var(--name-size), 14.5cqw, 24svh);
+    font-size: var(--fs);
     white-space: nowrap;
     line-height: 0.95;
     letter-spacing: var(--name-tracking);
@@ -560,7 +636,7 @@
 <body>
   <header>
     <div class="bar">
-      <h1>Mert Özkan</h1>
+      <h1>Mert Özkan<span class="bl" id="bl" aria-hidden="true"></span></h1>
       <button type="button" class="gear" id="open-settings" aria-haspopup="dialog" aria-label="Settings" title="Settings">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h9M19 7h1M4 17h1M11 17h9"/><circle cx="16" cy="7" r="2.4"/><circle cx="8" cy="17" r="2.4"/></svg>
       </button>
@@ -588,28 +664,30 @@
       </section>
       <section aria-label="Theme">
         <h3>Theme</h3>
-        <label class="pick" for="theme-select">
-          <span class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Theme</span>
-          <i id="swatch"></i>
-          <select id="theme-select">
-            <option value="ink">Ink</option>
-            <option value="ledger">Ledger</option>
-            <option value="terminal">Terminal</option>
-            <option value="pink">Pink paper</option>
-            <option value="weekly">Weekly</option>
-            <option value="phosphor">Phosphor</option>
-            <option value="blueprint">Blueprint</option>
-          </select>
-        </label>
+        <button type="button" class="tbtn" id="theme-btn" aria-haspopup="dialog">
+          <i id="swatch"></i><span id="theme-name">Ink</span>
+        </button>
       </section>
       <section aria-label="Pages">
         <h3>Pages</h3>
         <ul class="pages">
           <li><a href="desk.html"><b>Data desk</b><span>US rates, inflation and jobs</span></a></li>
-          <li><a href="lab.html"><b>Lab</b><span>Three ways to see the yield curve</span></a></li>
+          <li><a href="lab.html"><b>Lab</b><span>Exploded layers and a yield-curve terrain</span></a></li>
           <li><a href="card.html"><b>Card</b><span>Digital business card</span></a></li>
         </ul>
       </section>
+    </div>
+  </dialog>
+
+  <dialog class="settings picker" id="picker" aria-labelledby="picker-title">
+    <div class="sheet">
+      <div class="sheet-head">
+        <h2 id="picker-title">Themes</h2>
+        <button type="button" class="x" id="close-picker" aria-label="Close themes">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M2 2l10 10M12 2L2 12"/></svg>
+        </button>
+      </div>
+      <div class="opts" id="opts" role="radiogroup" aria-labelledby="picker-title"></div>
     </div>
   </dialog>
 
@@ -788,7 +866,9 @@
     blueprint: { shape: "smooth", color: "#1436c9", ac: "#ffd84d" }
   };
   const root = document.documentElement;
-  const select = document.getElementById("theme-select");
+  const themeName = document.getElementById("theme-name"), opts = document.getElementById("opts");
+  const LABELS = { ink: "Ink", ledger: "Ledger", terminal: "Terminal", pink: "Pink paper", weekly: "Weekly", phosphor: "Phosphor", blueprint: "Blueprint" };
+  opts.innerHTML = Object.keys(THEMES).map(k => `<button type="button" class="opt" role="radio" aria-checked="false" data-look="${k}" style="--sw-bg:${THEMES[k].color};--sw-ac:${THEMES[k].ac}"><i></i><span>${LABELS[k]}</span><b class="dot" aria-hidden="true"></b></button>`).join("");
   const swatch = document.getElementById("swatch");
   const themeColor = document.getElementById("theme-color");
   const saved = (() => { try { return localStorage.getItem("theme"); } catch { return null; } })();
@@ -799,19 +879,24 @@
     root.style.colorScheme = THEMES[name].light ? "light" : "dark";
     if (themeColor) themeColor.content = THEMES[name].color;
     shape = THEMES[name].shape;
-    select.value = name;
+    themeName.textContent = LABELS[name];
+    opts.querySelectorAll(".opt").forEach(o => o.setAttribute("aria-checked", String(o.dataset.look === name)));
     swatch.style.setProperty("--sw-bg", THEMES[name].color);
     swatch.style.setProperty("--sw-ac", THEMES[name].ac);
     layout();
+    if (typeof alignGear === "function") requestAnimationFrame(alignGear);
     if (replay) {
       chart.classList.add("replay");
       void chart.offsetWidth;
       chart.classList.remove("replay");
     }
   }
-  select.addEventListener("change", () => {
-    setTheme(select.value, true);
-    try { localStorage.setItem("theme", select.value); } catch {}
+  opts.addEventListener("click", e => {
+    const b = e.target.closest(".opt");
+    if (!b) return;
+    setTheme(b.dataset.look, true);
+    try { localStorage.setItem("theme", b.dataset.look); } catch {}
+    setTimeout(() => closeSheet(picker), 200);   // let the selection register, then close
   });
   setTheme(location.hash.slice(1) || saved || "ink", false);
 
@@ -846,26 +931,44 @@
     soonTimer = setTimeout(() => { soon.classList.remove("show"); soon.textContent = ""; }, 3200);
   });
 
-  // Settings sheet: opens and closes with a short animation
-  const dlg = document.getElementById("settings");
+  // Sheets (settings, and the theme picker on top of it): open and close with a short animation
+  const dlg = document.getElementById("settings"), picker = document.getElementById("picker");
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
-  document.getElementById("open-settings").addEventListener("click", () => dlg.showModal());
-  function closeSheet() {
-    if (!dlg.open || dlg.classList.contains("closing")) return;
-    if (reduceMotion.matches) { dlg.close(); return; }
-    dlg.classList.add("closing");
+  function closeSheet(d) {
+    if (!d.open || d.classList.contains("closing")) return;
+    if (reduceMotion.matches) { d.close(); return; }
+    d.classList.add("closing");
     let done = false;
-    dlg.addEventListener("animationend", function end(e) {
-      if (e.target !== dlg || done) return;
+    d.addEventListener("animationend", function end(e) {
+      if (e.target !== d || done) return;
       done = true;
-      dlg.removeEventListener("animationend", end);
-      dlg.classList.remove("closing");
-      dlg.close();
+      d.removeEventListener("animationend", end);
+      d.classList.remove("closing");
+      d.close();
     });
   }
-  document.getElementById("close-settings").addEventListener("click", closeSheet);
-  dlg.addEventListener("cancel", e => { e.preventDefault(); closeSheet(); });
-  dlg.addEventListener("click", e => { if (e.target === dlg) closeSheet(); });
+  for (const d of [dlg, picker]) {
+    d.addEventListener("cancel", e => { e.preventDefault(); closeSheet(d); });
+    d.addEventListener("click", e => { if (e.target === d) closeSheet(d); });
+  }
+  document.getElementById("open-settings").addEventListener("click", () => dlg.showModal());
+  document.getElementById("theme-btn").addEventListener("click", () => picker.showModal());
+  document.getElementById("close-settings").addEventListener("click", () => closeSheet(dlg));
+  document.getElementById("close-picker").addEventListener("click", () => closeSheet(picker));
+
+  // Keep the settings button centred on the name's letters, whatever the theme font or window size
+  const bar = document.querySelector(".bar"), gear = document.getElementById("open-settings"), h1 = document.querySelector("h1"), probe = document.getElementById("bl");
+  const cvs = document.createElement("canvas").getContext("2d");
+  function alignGear() {
+    const cs = getComputedStyle(h1);
+    cvs.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    const capH = cvs.measureText("M").actualBoundingBoxAscent || parseFloat(cs.fontSize) * 0.7;
+    const baseline = probe.getBoundingClientRect().bottom - bar.getBoundingClientRect().top;
+    bar.style.setProperty("--gear-y", (baseline - capH / 2 - gear.offsetHeight / 2).toFixed(1) + "px");
+  }
+  new ResizeObserver(alignGear).observe(bar);
+  if (document.fonts) { document.fonts.addEventListener("loadingdone", alignGear); document.fonts.ready.then(alignGear); }
+  alignGear();
 })();
 </script>
 </body>

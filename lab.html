@@ -6,7 +6,7 @@
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" content="#0c1929" id="theme-color">
 <title>Mert Özkan</title>
-<meta name="description" content="Three ways to see the US yield curve: a double helix, exploded layers and a terrain. Real FRED data.">
+<meta name="description" content="Two ways to see the US yield curve: exploded layers and a terrain. Real FRED data.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..600;1,6..96,400..600&family=Hanken+Grotesk:wght@400;500&family=Schibsted+Grotesk:wght@400..700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..600&family=Libre+Franklin:wght@400..800&family=JetBrains+Mono:wght@400..600&family=Archivo:wght@400..800&display=swap" rel="stylesheet">
@@ -364,7 +364,6 @@
       <label class="pick" for="view-select">
         <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">View</span>
         <select id="view-select">
-          <option value="helix">Helix</option>
           <option value="layers">Layers</option>
           <option value="terrain">Terrain</option>
         </select>
@@ -387,16 +386,6 @@
   </header>
 
   <main class="stage" id="stage">
-    <!-- 1. Double helix: 10-year and 2-year yields as two strands -->
-    <section class="view" id="v-helix" aria-label="Double helix of the 10-year and 2-year Treasury yields">
-      <canvas id="cv-helix" role="img" aria-label="Two twisting strands, the 10-year yield and the 2-year yield, joined by rungs. Rung length is the gap between them; highlighted rungs mark an inverted yield curve."></canvas>
-      <div class="tip" id="h-tip"></div>
-      <div class="hud">
-        <p class="cap">Two strands: the 10-year yield and the 2-year yield (labelled at the right). Each rung joins the two yields for one week; its length is the gap between them (magnified twofold while twisted). Highlighted rungs: the curve is inverted, the 2-year above the 10-year.</p>
-        <div class="row"><button class="btn" id="twist" type="button" aria-pressed="true">Untwist</button></div>
-      </div>
-    </section>
-
     <!-- 2. Exploded layers: four series pulled apart in depth -->
     <section class="view" id="v-layers" aria-label="Exploded layers of four US series">
       <div class="layers" id="layers"><div class="scene" id="scene"></div></div>
@@ -457,123 +446,6 @@
   }
 
   /* =====================================================================
-     1. Helix. Height of the axis: the mean of the two yields. Radius: half their gap.
-        Untwisted, the two strands are exactly the 10-year and 2-year lines.
-     ===================================================================== */
-  const H = { tau: 1, from: 1, to: 1, t0: null, rot: 0, hover: -1, last: 0 };
-  const WN = WK.t.length, VMIN = -0.8, VMAX = 6, OMEGA = 0.24, BOOST = 2;   // BOOST magnifies the gap when twisted so the helix reads
-  const helixCv = $("cv-helix"), hTip = $("h-tip");
-  const yearIdx = [];
-  for (let y = 2019; y <= 2026; y++) { const k = WK.t.findIndex(d => d >= y + "-01-01"); if (k >= 0) yearIdx.push([y, k]); }
-
-  $("twist").addEventListener("click", e => {
-    const on = e.currentTarget.getAttribute("aria-pressed") !== "true";
-    e.currentTarget.setAttribute("aria-pressed", String(on));
-    e.currentTarget.textContent = on ? "Untwist" : "Twist";
-    H.from = H.tau; H.to = on ? 1 : 0; H.t0 = null;
-    if (reduce.matches) { H.tau = H.to; }
-  });
-
-  function helixFrame(now) {
-    const { ctx, w, h } = fit(helixCv);
-    const dt = H.last ? Math.min(0.05, (now - H.last) / 1000) : 0;
-    H.last = now;
-    if (H.tau !== H.to) {
-      if (H.t0 === null) H.t0 = now;
-      const k = clamp((now - H.t0) / 1500, 0, 1);
-      H.tau = lerp(H.from, H.to, ease(k));
-      if (k >= 1) H.tau = H.to;
-    }
-    if (!reduce.matches) H.rot += dt * 0.9 * H.tau;
-    const left = 56, right = w - 110, top = 30, bottom = h - 132;
-    const X = i => left + (right - left) * i / (WN - 1);
-    const Y = v => bottom - ((v - VMIN) / (VMAX - VMIN)) * (bottom - top);
-    const px = (bottom - top) / (VMAX - VMIN);
-    ctx.clearRect(0, 0, w, h);
-    ctx.font = `500 12px ${P.body}`;
-
-    // grid and axes
-    ctx.lineWidth = 1;
-    for (const v of [0, 2, 4]) {
-      ctx.strokeStyle = rgba(P.grid, 1); ctx.beginPath(); ctx.moveTo(left, Y(v)); ctx.lineTo(right, Y(v)); ctx.stroke();
-      ctx.fillStyle = P.muted; ctx.textAlign = "right"; ctx.fillText(v + "%", left - 10, Y(v) + 4);
-    }
-    ctx.textAlign = "left"; ctx.fillStyle = P.muted;
-    for (const [y, k] of yearIdx) ctx.fillText(y, X(k) + 3, bottom + 20);
-
-    // geometry
-    const prims = [];
-    let prev = null;
-    const pts = [];
-    for (let i = 0; i < WN; i++) {
-      const a = WK.y10[i], b = WK.y2[i], s = a - b, mid = (a + b) / 2;
-      const phi = H.tau * (OMEGA * i + H.rot), c = Math.cos(phi), sn = Math.sin(phi);
-      const r = (s / 2) * (1 + (BOOST - 1) * H.tau), x = X(i);
-      pts.push({ x, ya: Y(mid + r * c), yb: Y(mid - r * c), z: r * sn * px, s });
-    }
-    const depth = z => lerp(1, clamp(z / 90 * 0.5 + 0.5, 0, 1), H.tau);
-    for (let i = 1; i < WN; i++) {
-      const p = pts[i - 1], q = pts[i];
-      const za = (p.z + q.z) / 2;
-      prims.push({ z: za, k: "a", p, q });
-      prims.push({ z: -za, k: "b", p, q });
-      if (i % 3 === 0) prims.push({ z: 0, k: "r", q });
-    }
-    prims.sort((m, n) => m.z - n.z);
-    ctx.lineCap = "round";
-    for (const m of prims) {
-      if (m.k === "r") {
-        const q = m.q;
-        ctx.strokeStyle = q.s >= 0 ? rgba(P.text, 0.3) : rgba(P.neg, 0.9);
-        ctx.lineWidth = q.s >= 0 ? 1 : 1.6;
-        ctx.beginPath(); ctx.moveTo(q.x, q.ya); ctx.lineTo(q.x, q.yb); ctx.stroke();
-      } else {
-        const a = m.k === "a", d = depth(m.z);
-        ctx.strokeStyle = rgba(a ? P.gold : P.blue, 0.3 + 0.7 * d);
-        ctx.lineWidth = 1.4 + 1.8 * d;
-        ctx.beginPath();
-        ctx.moveTo(m.p.x, a ? m.p.ya : m.p.yb);
-        ctx.lineTo(m.q.x, a ? m.q.ya : m.q.yb);
-        ctx.stroke();
-      }
-    }
-
-    // hover
-    if (H.hover >= 0) {
-      const p = pts[H.hover];
-      ctx.strokeStyle = rgba(P.text, 0.35); ctx.lineWidth = 1; ctx.setLineDash([3, 4]);
-      ctx.beginPath(); ctx.moveTo(p.x, top - 10); ctx.lineTo(p.x, bottom + 4); ctx.stroke(); ctx.setLineDash([]);
-    }
-
-    // end labels
-    const e = pts[WN - 1], la = WK.y10[WN - 1], lb = WK.y2[WN - 1];
-    let ya = e.ya, yb = e.yb;
-    if (Math.abs(ya - yb) < 18) { const m = (ya + yb) / 2, sgn = ya < yb ? -1 : 1; ya = m + sgn * 9; yb = m - sgn * 9; }
-    ctx.textAlign = "left";
-    ctx.fillStyle = P.gold; ctx.fillText("10Y", e.x + 12, ya - 2);
-    ctx.fillStyle = P.text; ctx.font = `600 13px ${P.body}`; ctx.fillText(la.toFixed(2) + "%", e.x + 12, ya + 13);
-    ctx.font = `500 12px ${P.body}`;
-    ctx.fillStyle = P.blue; ctx.fillText("2Y", e.x + 12, yb - 2 + 30 * (Math.abs(ya - yb) < 30 ? 1 : 0));
-    ctx.fillStyle = P.text; ctx.font = `600 13px ${P.body}`; ctx.fillText(lb.toFixed(2) + "%", e.x + 12, yb + 13 + 30 * (Math.abs(ya - yb) < 30 ? 1 : 0));
-
-    helixCv._pts = pts;
-  }
-  helixCv.addEventListener("pointermove", e => {
-    const pts = helixCv._pts; if (!pts) return;
-    const r = helixCv.getBoundingClientRect(), x = e.clientX - r.left;
-    let best = 0, bd = Infinity;
-    for (let i = 0; i < pts.length; i += 1) { const d = Math.abs(pts[i].x - x); if (d < bd) { bd = d; best = i; } }
-    if (bd > 24) { H.hover = -1; hTip.classList.remove("on"); return; }
-    H.hover = best;
-    const a = WK.y10[best], b = WK.y2[best], s = Math.round((a - b) * 100);
-    hTip.innerHTML = `<b>${dayLabel(WK.t[best])}</b>10Y ${a.toFixed(2)}%<br>2Y ${b.toFixed(2)}%<br>Gap ${s < 0 ? "−" : "+"}${Math.abs(s)} bp${s < 0 ? " (inverted)" : ""}`;
-    hTip.style.left = Math.min(x + 16, r.width - 150) + "px";
-    hTip.style.top = Math.max(8, e.clientY - r.top - 70) + "px";
-    hTip.classList.add("on");
-  });
-  helixCv.addEventListener("pointerleave", () => { H.hover = -1; hTip.classList.remove("on"); });
-
-  /* =====================================================================
      2. Layers: four series as translucent planes, pulled apart in depth
      ===================================================================== */
   const LAYERS = [
@@ -625,7 +497,7 @@
     el.addEventListener("pointerdown", e => { drag = { x: e.clientX, y: e.clientY, rx, rz }; el.setPointerCapture(e.pointerId); el.style.cursor = "grabbing"; });
     el.addEventListener("pointermove", e => {
       if (!drag) return;
-      rz = drag.rz + (e.clientX - drag.x) * 0.4;
+      rz = drag.rz - (e.clientX - drag.x) * 0.4;   // drag right, the near edge turns right
       rx = clamp(drag.rx - (e.clientY - drag.y) * 0.3, 20, 82);
       scene.style.setProperty("--rz", rz + "deg"); scene.style.setProperty("--rx", rx + "deg");
     });
@@ -712,11 +584,11 @@
   }
 
   /* ----- view manager ----- */
-  const VIEWS = { helix: { frame: helixFrame }, layers: { enter: () => { if (!Ly.seen) { Ly.seen = true; scene.style.setProperty("--gap", "14px"); setTimeout(() => tweenGap(110), 250); } } }, terrain: { enter: () => { T.g0 = null; } } };
+  const VIEWS = { layers: { enter: () => { if (!Ly.seen) { Ly.seen = true; scene.style.setProperty("--gap", "14px"); setTimeout(() => tweenGap(110), 250); } } }, terrain: { enter: () => { T.g0 = null; } } };
   const select = $("view-select");
-  let current = "helix";
+  let current = "layers";
   function setView(name, save) {
-    if (!VIEWS[name]) name = "helix";
+    if (!VIEWS[name]) name = "layers";
     current = name;
     for (const k of Object.keys(VIEWS)) $("v-" + k).classList.toggle("on", k === name);
     select.value = name;
@@ -746,7 +618,7 @@
   const safe = k => { try { return localStorage.getItem(k); } catch { return null; } };
   setTheme(location.hash.slice(1) || safe("theme"), false);
   readout();
-  setView(new URLSearchParams(location.search).get("view") || safe("labView") || "helix", false);
+  setView(new URLSearchParams(location.search).get("view") || safe("labView") || "layers", false);
   (function loop(now) {
     requestAnimationFrame(loop);
     const f = VIEWS[current].frame;

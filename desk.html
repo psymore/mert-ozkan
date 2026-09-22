@@ -221,7 +221,7 @@
     pointer-events: none;
     background: radial-gradient(ellipse closest-side, color-mix(in srgb, var(--accent) 58%, transparent) 0%, color-mix(in srgb, var(--accent) 28%, transparent) 42%, transparent 100%);
     filter: blur(7px);
-    opacity: 0.75;
+    opacity: 0.5;
   }
   .soon.first { animation: soon-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
   .soon.first::before { animation: soon-halo 1.8s ease-out both; }
@@ -239,8 +239,8 @@
   @keyframes soon-in { from { clip-path: inset(-140px 100% -140px 0); transform: translateY(-5px); } to { clip-path: inset(-140px); transform: none; } }
   @keyframes soon-halo {
     0% { opacity: 0; transform: scale(0.55); }
-    35% { opacity: 1; transform: scale(1.14); }
-    100% { opacity: 0.75; transform: scale(1); }
+    35% { opacity: 0.75; transform: scale(1.1); }
+    100% { opacity: 0.5; transform: scale(1); }
   }
   @keyframes soon-line { from { transform: scaleX(0); } to { transform: scaleX(1); } }
   .pick { position: relative; display: inline-flex; align-items: center; }
