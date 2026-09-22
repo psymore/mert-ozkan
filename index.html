@@ -213,19 +213,25 @@
     border: 0;
     color: var(--muted);
     cursor: pointer;
-    box-shadow: 0 0 0 1px var(--grid),
+    /* Resting border: the accent colour, softened. Pressing it turns the same colour full strength and heavier. */
+    box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--gold) 42%, transparent),
       0 10px 24px -8px color-mix(in srgb, var(--text) 45%, transparent),
       0 3px 8px -3px color-mix(in srgb, var(--text) 30%, transparent);
-    transition: color 0.2s ease, box-shadow 0.25s ease, transform 0.25s ease;
+    transition: color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
   }
   .gear:hover {
     color: var(--text);
     transform: translateY(-1px);
-    box-shadow: 0 0 0 1px var(--gold),
-      0 12px 28px -8px color-mix(in srgb, var(--gold) 55%, transparent),
-      0 0 22px color-mix(in srgb, var(--gold) 28%, transparent);
+    box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--gold) 68%, transparent),
+      0 12px 28px -8px color-mix(in srgb, var(--gold) 40%, transparent),
+      0 3px 8px -3px color-mix(in srgb, var(--text) 30%, transparent);
   }
-  .gear:active { transform: translateY(0); }
+  .gear:active {
+    color: var(--text);
+    transform: translateY(0);
+    box-shadow: 0 0 0 2.5px var(--gold),
+      0 6px 16px -8px color-mix(in srgb, var(--gold) 50%, transparent);
+  }
   .gear svg { width: 20px; height: 20px; }
 
   /* Settings sheet */
@@ -296,6 +302,7 @@
   .country button[aria-pressed="true"] { color: var(--text); box-shadow: inset 0 -2px 0 var(--gold); }
   .soon {
     position: relative;
+    z-index: 0;
     padding: 6px 12px;
     background: var(--bg);
     border: 1px solid var(--gold);
@@ -306,10 +313,20 @@
     pointer-events: none;
     transition: opacity 0.3s ease;
     text-shadow: 0 0 10px color-mix(in srgb, var(--gold) 70%, transparent);
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 55%, transparent), 0 0 16px color-mix(in srgb, var(--gold) 45%, transparent), 0 0 34px color-mix(in srgb, var(--gold) 25%, transparent);
   }
   .soon.show { opacity: 1; }
-  .soon.first { animation: soon-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both, soon-glow 1.8s ease-out both; }
+  .soon::before {
+    content: "";
+    position: absolute;
+    inset: -30px -68px;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(ellipse closest-side, color-mix(in srgb, var(--gold) 58%, transparent) 0%, color-mix(in srgb, var(--gold) 28%, transparent) 42%, transparent 100%);
+    filter: blur(7px);
+    opacity: 0.75;
+  }
+  .soon.first { animation: soon-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  .soon.first::before { animation: soon-halo 1.8s ease-out both; }
   .soon.first::after {
     content: "";
     position: absolute;
@@ -321,11 +338,11 @@
     transform-origin: left;
     animation: soon-line 0.9s 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
-  @keyframes soon-in { from { clip-path: inset(-44px 100% -44px 0); transform: translateY(-5px); } to { clip-path: inset(-44px); transform: none; } }
-  @keyframes soon-glow {
-    0% { box-shadow: 0 0 0 0 transparent; }
-    35% { box-shadow: 0 0 0 1px var(--gold), 0 0 22px 2px color-mix(in srgb, var(--gold) 65%, transparent), 0 0 54px 8px color-mix(in srgb, var(--gold) 38%, transparent); }
-    100% { box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 55%, transparent), 0 0 16px color-mix(in srgb, var(--gold) 45%, transparent), 0 0 34px color-mix(in srgb, var(--gold) 25%, transparent); }
+  @keyframes soon-in { from { clip-path: inset(-140px 100% -140px 0); transform: translateY(-5px); } to { clip-path: inset(-140px); transform: none; } }
+  @keyframes soon-halo {
+    0% { opacity: 0; transform: scale(0.55); }
+    35% { opacity: 1; transform: scale(1.14); }
+    100% { opacity: 0.75; transform: scale(1); }
   }
   @keyframes soon-line { from { transform: scaleX(0); } to { transform: scaleX(1); } }
   .pick { position: relative; display: inline-flex; align-items: center; }
@@ -532,7 +549,7 @@
 
   @media (max-height: 640px) { .intro { display: none; } }
   @media (prefers-reduced-motion: reduce) {
-    .soon.first, .soon.first::after { animation: none; }
+    .soon.first, .soon.first::after, .soon.first::before { animation: none; }
     .series path { animation: none; stroke-dashoffset: 0; }
     .series-label, .now-dot, .contact { animation: none; opacity: 1; }
     .now-ring { animation: none; opacity: 0; }

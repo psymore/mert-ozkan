@@ -211,10 +211,20 @@
     pointer-events: none;
     transition: opacity 0.3s ease;
     text-shadow: 0 0 10px color-mix(in srgb, var(--accent) 70%, transparent);
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent), 0 0 16px color-mix(in srgb, var(--accent) 45%, transparent), 0 0 34px color-mix(in srgb, var(--accent) 25%, transparent);
   }
   .soon.show { opacity: 1; }
-  .soon.first { animation: soon-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both, soon-glow 1.8s ease-out both; }
+  .soon::before {
+    content: "";
+    position: absolute;
+    inset: -30px -68px;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(ellipse closest-side, color-mix(in srgb, var(--accent) 58%, transparent) 0%, color-mix(in srgb, var(--accent) 28%, transparent) 42%, transparent 100%);
+    filter: blur(7px);
+    opacity: 0.75;
+  }
+  .soon.first { animation: soon-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  .soon.first::before { animation: soon-halo 1.8s ease-out both; }
   .soon.first::after {
     content: "";
     position: absolute;
@@ -226,11 +236,11 @@
     transform-origin: left;
     animation: soon-line 0.9s 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
-  @keyframes soon-in { from { clip-path: inset(-44px 100% -44px 0); transform: translateY(-5px); } to { clip-path: inset(-44px); transform: none; } }
-  @keyframes soon-glow {
-    0% { box-shadow: 0 0 0 0 transparent; }
-    35% { box-shadow: 0 0 0 1px var(--accent), 0 0 22px 2px color-mix(in srgb, var(--accent) 65%, transparent), 0 0 54px 8px color-mix(in srgb, var(--accent) 38%, transparent); }
-    100% { box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent), 0 0 16px color-mix(in srgb, var(--accent) 45%, transparent), 0 0 34px color-mix(in srgb, var(--accent) 25%, transparent); }
+  @keyframes soon-in { from { clip-path: inset(-140px 100% -140px 0); transform: translateY(-5px); } to { clip-path: inset(-140px); transform: none; } }
+  @keyframes soon-halo {
+    0% { opacity: 0; transform: scale(0.55); }
+    35% { opacity: 1; transform: scale(1.14); }
+    100% { opacity: 0.75; transform: scale(1); }
   }
   @keyframes soon-line { from { transform: scaleX(0); } to { transform: scaleX(1); } }
   .pick { position: relative; display: inline-flex; align-items: center; }
@@ -397,7 +407,7 @@
     .grid { grid-template-columns: minmax(0, 1fr); }
     .kpi .val { font-size: 1.5rem; }
   }
-  @media (prefers-reduced-motion: reduce) { .pulse { animation: none; } summary::after { transition: none; } .soon.first, .soon.first::after { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { .pulse { animation: none; } summary::after { transition: none; } .soon.first, .soon.first::after, .soon.first::before { animation: none; } }
 </style>
 </head>
 <body>
