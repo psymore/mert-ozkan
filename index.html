@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..600;1,6..96,400..600&family=Hanken+Grotesk:wght@400;500&family=Schibsted+Grotesk:wght@400..700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..600&family=Libre+Franklin:wght@400..800&family=JetBrains+Mono:wght@400..600&family=Archivo:wght@400..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="settings.css">
 <script>try{var t=location.hash.slice(1)||localStorage.getItem("theme");if(t)document.documentElement.dataset.look=t}catch(e){}</script>
 <style>
   :root {
@@ -22,6 +23,7 @@
     --teal: #66b5a8;
     --lilac: #b4a4d6;
     --gutter: clamp(20px, 5vw, 64px);
+    --s-bg: var(--bg); --s-text: var(--text); --s-muted: var(--muted); --s-line: var(--grid); --s-accent: var(--gold); --s-body: var(--body);
 
     /* Type and line character, overridden per theme */
     --body: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -210,252 +212,9 @@
     container-type: inline-size;
   }
   .bar h1 { min-width: 0; }
-  .gear {
-    flex: none;
-    display: grid;
-    place-items: center;
-    width: var(--gs);
-    height: var(--gs);
-    margin-top: var(--gear-y, calc(var(--fs) * 0.42 - var(--gs) / 2));   /* JS refines this to the exact cap-height centre */
-    padding: 0;
-    background: color-mix(in srgb, var(--text) 6%, var(--bg));
-    border: 0;
-    color: var(--muted);
-    cursor: pointer;
-    /* Resting border: the accent colour, softened. Pressing it turns the same colour full strength and heavier. */
-    box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--gold) 42%, transparent),
-      0 10px 24px -8px color-mix(in srgb, var(--text) 45%, transparent),
-      0 3px 8px -3px color-mix(in srgb, var(--text) 30%, transparent);
-    transition: color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-  }
-  .gear:hover {
-    color: var(--text);
-    transform: translateY(-1px);
-    box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--gold) 68%, transparent),
-      0 12px 28px -8px color-mix(in srgb, var(--gold) 40%, transparent),
-      0 3px 8px -3px color-mix(in srgb, var(--text) 30%, transparent);
-  }
-  .gear:active {
-    color: var(--text);
-    transform: translateY(0);
-    box-shadow: 0 0 0 2.5px var(--gold),
-      0 6px 16px -8px color-mix(in srgb, var(--gold) 50%, transparent);
-  }
-  .gear svg { width: calc(var(--gs) * 0.43); height: calc(var(--gs) * 0.43); }
+  .bar .st-gear { margin-top: var(--gear-y, calc(var(--fs) * 0.42 - var(--gs) / 2)); }   /* JS refines this to the exact cap-height centre */
   .bl { display: inline-block; width: 0; height: 0; }
 
-  /* Settings sheet */
-  dialog.settings {
-    width: min(440px, calc(100vw - 32px));
-    max-height: calc(100svh - 32px);
-    margin: auto;
-    padding: 0;
-    overflow: auto;
-    background: color-mix(in srgb, var(--text) 5%, var(--bg));
-    color: var(--text);
-    border: 1px solid var(--grid);
-    font-family: var(--body);
-    box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.6);
-  }
-  dialog.settings::backdrop { background: rgba(0, 0, 0, 0.55); backdrop-filter: blur(5px); }
-  dialog.settings[open] { animation: sheet-in 0.38s cubic-bezier(0.2, 0.7, 0.2, 1); }
-  dialog.settings[open]::backdrop { animation: veil-in 0.3s ease; }
-  dialog.settings.closing { animation: sheet-out 0.24s ease-in forwards; }
-  dialog.settings.closing::backdrop { animation: veil-out 0.24s ease-in forwards; }
-  @keyframes sheet-in { from { opacity: 0; transform: translateY(14px) scale(0.98); } }
-  @keyframes sheet-out { to { opacity: 0; transform: translateY(8px) scale(0.985); } }
-  @keyframes veil-in { from { opacity: 0; } }
-  @keyframes veil-out { to { opacity: 0; } }
-  .sheet { display: grid; gap: 22px; padding: 22px 24px 26px; }
-  .sheet-head { display: flex; align-items: center; justify-content: space-between; }
-  .sheet h2 { margin: 0; font: 600 1.125rem var(--body); letter-spacing: -0.01em; }
-  .sheet h3 { margin: 0 0 10px; color: var(--muted); font: 500 0.8125rem var(--body); }
-  .sheet .x {
-    display: grid;
-    place-items: center;
-    width: 34px;
-    height: 34px;
-    background: none;
-    border: 1px solid var(--grid);
-    color: var(--muted);
-    cursor: pointer;
-  }
-  .sheet .x:hover { color: var(--text); border-color: var(--muted); }
-  .sheet .x svg { width: 14px; height: 14px; }
-  .row { display: flex; align-items: center; gap: 14px; min-height: 40px; }
-  .pages { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--grid); }
-  .pages a {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--grid);
-    color: var(--text);
-    text-decoration: none;
-    transition: color 0.2s ease, padding 0.25s ease;
-  }
-  .pages a:hover { color: var(--gold); padding-left: 6px; }
-  .pages b { font-weight: 600; }
-  .pages span { color: var(--muted); font-size: 0.8125rem; text-align: right; }
-  .country { position: relative; display: inline-flex; border: 1px solid var(--grid); }
-  .country button {
-    padding: 8px 14px;
-    background: none;
-    border: 0;
-    color: var(--muted);
-    font: 500 0.875rem var(--body);
-    cursor: pointer;
-    transition: color 0.2s ease;
-  }
-  .country button:hover { color: var(--text); }
-  .country button[aria-pressed="true"] { color: var(--text); box-shadow: inset 0 -2px 0 var(--gold); }
-  .soon {
-    position: relative;
-    z-index: 0;
-    padding: 6px 12px;
-    background: var(--bg);
-    border: 1px solid var(--gold);
-    color: var(--text);
-    font: 500 0.8125rem var(--body);
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-    text-shadow: 0 0 10px color-mix(in srgb, var(--gold) 70%, transparent);
-  }
-  .soon.show { opacity: 1; }
-  .soon::before {
-    content: "";
-    position: absolute;
-    inset: -30px -68px;
-    z-index: -1;
-    pointer-events: none;
-    background: radial-gradient(ellipse closest-side, color-mix(in srgb, var(--gold) 58%, transparent) 0%, color-mix(in srgb, var(--gold) 28%, transparent) 42%, transparent 100%);
-    filter: blur(7px);
-    opacity: 0.5;
-  }
-  .soon.first { animation: soon-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
-  .soon.first::before { animation: soon-halo 1.8s ease-out both; }
-  .soon.first::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -1px;
-    height: 2px;
-    background: var(--gold);
-    transform-origin: left;
-    animation: soon-line 0.9s 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-  }
-  @keyframes soon-in { from { clip-path: inset(-140px 100% -140px 0); transform: translateY(-5px); } to { clip-path: inset(-140px); transform: none; } }
-  @keyframes soon-halo {
-    0% { opacity: 0; transform: scale(0.55); }
-    35% { opacity: 0.75; transform: scale(1.1); }
-    100% { opacity: 0.5; transform: scale(1); }
-  }
-  @keyframes soon-line { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-  .pick { position: relative; display: inline-flex; align-items: center; }
-  .pick select {
-    appearance: none;
-    -webkit-appearance: none;
-    padding: 8px 36px 8px 38px;
-    background: transparent;
-    border: 1px solid var(--grid);
-    border-radius: 0;
-    color: var(--text);
-    font: 500 0.875rem var(--body);
-    cursor: pointer;
-    transition: border-color 0.2s ease;
-  }
-  .pick select:hover { border-color: var(--muted); }
-  .pick select option { background: var(--bg); color: var(--text); }
-  .pick i { position: absolute; left: 12px; pointer-events: none; }
-  .pick::after {
-    content: "";
-    position: absolute;
-    right: 14px;
-    top: 50%;
-    width: 6px;
-    height: 6px;
-    border: solid var(--muted);
-    border-width: 0 1.5px 1.5px 0;
-    transform: translateY(-70%) rotate(45deg);
-    pointer-events: none;
-  }
-  .pick i {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: var(--sw-bg);
-    box-shadow: inset 0 0 0 1px var(--muted), inset 0 0 0 4px var(--sw-bg), inset 0 0 0 14px var(--sw-ac);
-  }
-  /* Theme picker */
-  .tbtn {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    min-width: 200px;
-    padding: 10px 40px 10px 12px;
-    background: transparent;
-    border: 1px solid var(--grid);
-    color: var(--text);
-    font: 500 0.875rem var(--body);
-    text-align: left;
-    cursor: pointer;
-    transition: border-color 0.2s ease;
-  }
-  .tbtn:hover { border-color: var(--muted); }
-  .tbtn::after {
-    content: "";
-    position: absolute;
-    right: 14px;
-    top: 50%;
-    width: 6px;
-    height: 6px;
-    border: solid var(--muted);
-    border-width: 0 1.5px 1.5px 0;
-    transform: translateY(-70%) rotate(45deg);
-  }
-  .tbtn i, .opt i {
-    flex: none;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: var(--sw-bg);
-    box-shadow: inset 0 0 0 1px var(--muted), inset 0 0 0 4px var(--sw-bg), inset 0 0 0 16px var(--sw-ac);
-  }
-  dialog.picker { width: min(380px, calc(100vw - 32px)); }
-  .opts { display: grid; border-top: 1px solid var(--grid); }
-  .opt {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    width: 100%;
-    padding: 14px 2px;
-    background: none;
-    border: 0;
-    border-bottom: 1px solid var(--grid);
-    color: var(--text);
-    font: 500 1rem var(--body);
-    text-align: left;
-    cursor: pointer;
-    transition: color 0.2s ease, padding 0.25s ease;
-  }
-  .opt:hover { color: var(--gold); padding-left: 6px; }
-  .opt .dot {
-    display: grid;
-    place-items: center;
-    flex: none;
-    width: 20px;
-    height: 20px;
-    margin-left: auto;
-    border: 2px solid var(--muted);
-    border-radius: 50%;
-  }
-  .opt[aria-checked="true"] .dot { border-color: var(--gold); }
-  .opt[aria-checked="true"] .dot::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--gold); }
   h1 {
     margin: 0;
     font-family: var(--display);
@@ -625,7 +384,6 @@
 
   @media (max-height: 640px) { .intro { display: none; } }
   @media (prefers-reduced-motion: reduce) {
-    .soon.first, .soon.first::after, .soon.first::before { animation: none; }
     .series path { animation: none; stroke-dashoffset: 0; }
     .series-label, .now-dot, .contact { animation: none; opacity: 1; }
     .now-ring { animation: none; opacity: 0; }
@@ -637,59 +395,12 @@
   <header>
     <div class="bar">
       <h1>Mert Özkan<span class="bl" id="bl" aria-hidden="true"></span></h1>
-      <button type="button" class="gear" id="open-settings" aria-haspopup="dialog" aria-label="Settings" title="Settings">
+      <button type="button" class="st-gear" id="open-settings" aria-haspopup="dialog" aria-label="Settings" title="Settings">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h9M19 7h1M4 17h1M11 17h9"/><circle cx="16" cy="7" r="2.4"/><circle cx="8" cy="17" r="2.4"/></svg>
       </button>
     </div>
     <p class="intro">I follow the economy closely: interest rates, inflation, jobs and currencies, and what they mean for markets. If you want to talk it through, write to me.</p>
   </header>
-
-  <dialog class="settings" id="settings" aria-labelledby="settings-title">
-    <div class="sheet">
-      <div class="sheet-head">
-        <h2 id="settings-title">Settings</h2>
-        <button type="button" class="x" id="close-settings" aria-label="Close settings">
-          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M2 2l10 10M12 2L2 12"/></svg>
-        </button>
-      </div>
-      <section aria-label="Country">
-        <h3>Country</h3>
-        <div class="row">
-          <div class="country" role="group" aria-label="Country">
-            <button type="button" id="us" aria-pressed="true">US</button>
-            <button type="button" id="tr" aria-pressed="false" aria-describedby="soon">TR</button>
-          </div>
-          <span class="soon" id="soon" role="status"></span>
-        </div>
-      </section>
-      <section aria-label="Theme">
-        <h3>Theme</h3>
-        <button type="button" class="tbtn" id="theme-btn" aria-haspopup="dialog">
-          <i id="swatch"></i><span id="theme-name">Ink</span>
-        </button>
-      </section>
-      <section aria-label="Pages">
-        <h3>Pages</h3>
-        <ul class="pages">
-          <li><a href="desk.html"><b>Data desk</b><span>US rates, inflation and jobs</span></a></li>
-          <li><a href="lab.html"><b>Lab</b><span>Exploded layers and a yield-curve terrain</span></a></li>
-          <li><a href="card.html"><b>Card</b><span>Digital business card</span></a></li>
-        </ul>
-      </section>
-    </div>
-  </dialog>
-
-  <dialog class="settings picker" id="picker" aria-labelledby="picker-title">
-    <div class="sheet">
-      <div class="sheet-head">
-        <h2 id="picker-title">Themes</h2>
-        <button type="button" class="x" id="close-picker" aria-label="Close themes">
-          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M2 2l10 10M12 2L2 12"/></svg>
-        </button>
-      </div>
-      <div class="opts" id="opts" role="radiogroup" aria-labelledby="picker-title"></div>
-    </div>
-  </dialog>
 
   <main class="chart" id="chart">
     <svg id="svg" aria-hidden="true" focusable="false"></svg>
@@ -705,6 +416,7 @@
     <span>United States. Source: FRED, Federal Reserve Bank of St. Louis (CPIAUCSL, UNRATE, DTWEXBGS, DGS10). Each line is scaled to its own range; latest values at right. October 2025 CPI and jobs data were not published, so those lines bridge that month.</span>
   </footer>
 
+<script src="settings.js"></script>
 <script>
 (() => {
   const NS = "http://www.w3.org/2000/svg";
@@ -866,10 +578,6 @@
     blueprint: { shape: "smooth", color: "#1436c9", ac: "#ffd84d" }
   };
   const root = document.documentElement;
-  const themeName = document.getElementById("theme-name"), opts = document.getElementById("opts");
-  const LABELS = { ink: "Ink", ledger: "Ledger", terminal: "Terminal", pink: "Pink paper", weekly: "Weekly", phosphor: "Phosphor", blueprint: "Blueprint" };
-  opts.innerHTML = Object.keys(THEMES).map(k => `<button type="button" class="opt" role="radio" aria-checked="false" data-look="${k}" style="--sw-bg:${THEMES[k].color};--sw-ac:${THEMES[k].ac}"><i></i><span>${LABELS[k]}</span><b class="dot" aria-hidden="true"></b></button>`).join("");
-  const swatch = document.getElementById("swatch");
   const themeColor = document.getElementById("theme-color");
   const saved = (() => { try { return localStorage.getItem("theme"); } catch { return null; } })();
 
@@ -879,10 +587,7 @@
     root.style.colorScheme = THEMES[name].light ? "light" : "dark";
     if (themeColor) themeColor.content = THEMES[name].color;
     shape = THEMES[name].shape;
-    themeName.textContent = LABELS[name];
-    opts.querySelectorAll(".opt").forEach(o => o.setAttribute("aria-checked", String(o.dataset.look === name)));
-    swatch.style.setProperty("--sw-bg", THEMES[name].color);
-    swatch.style.setProperty("--sw-ac", THEMES[name].ac);
+    Settings.sync(name);
     layout();
     if (typeof alignGear === "function") requestAnimationFrame(alignGear);
     if (replay) {
@@ -891,13 +596,7 @@
       chart.classList.remove("replay");
     }
   }
-  opts.addEventListener("click", e => {
-    const b = e.target.closest(".opt");
-    if (!b) return;
-    setTheme(b.dataset.look, true);
-    try { localStorage.setItem("theme", b.dataset.look); } catch {}
-    setTimeout(() => closeSheet(picker), 200);   // let the selection register, then close
-  });
+  Settings.onTheme = n => { setTheme(n, true); try { localStorage.setItem("theme", n); } catch {} };
   setTheme(location.hash.slice(1) || saved || "ink", false);
 
   // Copy address
@@ -918,43 +617,6 @@
     clearTimeout(timer);
     timer = setTimeout(() => { copyBtn.textContent = "Copy address"; status.textContent = ""; }, 2000);
   });
-
-  /* Country switch: US is what the data is; TR is not built yet, so it answers with a note that animates the first time */
-  const trBtn = document.getElementById("tr"), soon = document.getElementById("soon");
-  let soonTimer;
-  trBtn.addEventListener("click", () => {
-    clearTimeout(soonTimer);
-    soon.classList.remove("show", "first");
-    void soon.offsetWidth;
-    soon.textContent = "Coming soon";
-    soon.classList.add("first", "show");   // the whole animation plays on every press
-    soonTimer = setTimeout(() => { soon.classList.remove("show"); soon.textContent = ""; }, 3200);
-  });
-
-  // Sheets (settings, and the theme picker on top of it): open and close with a short animation
-  const dlg = document.getElementById("settings"), picker = document.getElementById("picker");
-  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
-  function closeSheet(d) {
-    if (!d.open || d.classList.contains("closing")) return;
-    if (reduceMotion.matches) { d.close(); return; }
-    d.classList.add("closing");
-    let done = false;
-    d.addEventListener("animationend", function end(e) {
-      if (e.target !== d || done) return;
-      done = true;
-      d.removeEventListener("animationend", end);
-      d.classList.remove("closing");
-      d.close();
-    });
-  }
-  for (const d of [dlg, picker]) {
-    d.addEventListener("cancel", e => { e.preventDefault(); closeSheet(d); });
-    d.addEventListener("click", e => { if (e.target === d) closeSheet(d); });
-  }
-  document.getElementById("open-settings").addEventListener("click", () => dlg.showModal());
-  document.getElementById("theme-btn").addEventListener("click", () => picker.showModal());
-  document.getElementById("close-settings").addEventListener("click", () => closeSheet(dlg));
-  document.getElementById("close-picker").addEventListener("click", () => closeSheet(picker));
 
   // Keep the settings button centred on the name's letters, whatever the theme font or window size
   const bar = document.querySelector(".bar"), gear = document.getElementById("open-settings"), h1 = document.querySelector("h1"), probe = document.getElementById("bl");

@@ -1,0 +1,282 @@
+/* Shared Settings button and sheet (all pages).
+   Each page maps its own tokens to these:
+   --s-bg  --s-text  --s-muted  --s-line  --s-accent  --s-body  and optionally --s-radius, --gs (button size)
+
+   Hierarchy, top to bottom:
+   1. sheet title            (largest, bold)
+   2. group heading          (small, muted, upper case: never clickable)
+   3. setting row            (label on the left, a filled button-like control on the right)
+   4. page row               (name, a muted line under it, an arrow on the right) */
+
+.st-gear {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--gs, 40px);
+  height: var(--gs, 40px);
+  padding: 0;
+  background: color-mix(in srgb, var(--s-text) 6%, var(--s-bg));
+  border: 0;
+  border-radius: var(--s-radius, 0);
+  color: var(--s-muted);
+  cursor: pointer;
+  /* resting border: the accent, softened; pressing turns it full strength and heavier */
+  box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--s-accent) 42%, transparent),
+    0 10px 24px -8px color-mix(in srgb, var(--s-text) 45%, transparent),
+    0 3px 8px -3px color-mix(in srgb, var(--s-text) 30%, transparent);
+  transition: color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+.st-gear:hover {
+  color: var(--s-text);
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--s-accent) 68%, transparent),
+    0 12px 28px -8px color-mix(in srgb, var(--s-accent) 40%, transparent),
+    0 3px 8px -3px color-mix(in srgb, var(--s-text) 30%, transparent);
+}
+.st-gear:active {
+  color: var(--s-text);
+  transform: translateY(0);
+  box-shadow: 0 0 0 2.5px var(--s-accent), 0 6px 16px -8px color-mix(in srgb, var(--s-accent) 50%, transparent);
+}
+.st-gear svg { width: calc(var(--gs, 40px) * 0.45); height: calc(var(--gs, 40px) * 0.45); }
+.st-gear:focus-visible, .st-dialog button:focus-visible, .st-dialog a:focus-visible { outline: 2px solid var(--s-accent); outline-offset: 3px; }
+
+dialog.st-dialog {
+  width: min(440px, calc(100vw - 32px));
+  max-height: calc(100svh - 32px);
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  background: color-mix(in srgb, var(--s-text) 5%, var(--s-bg));
+  color: var(--s-text);
+  border: 1px solid color-mix(in srgb, var(--s-text) 18%, transparent);
+  border-radius: var(--s-radius, 0);
+  font-family: var(--s-body);
+  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.6);
+}
+dialog.st-picker { width: min(380px, calc(100vw - 32px)); }
+dialog.st-dialog::backdrop { background: rgba(0, 0, 0, 0.55); backdrop-filter: blur(5px); }
+dialog.st-dialog[open] { animation: st-sheet-in 0.38s cubic-bezier(0.2, 0.7, 0.2, 1); }
+dialog.st-dialog[open]::backdrop { animation: st-veil-in 0.3s ease; }
+dialog.st-dialog.st-closing { animation: st-sheet-out 0.24s ease-in forwards; }
+dialog.st-dialog.st-closing::backdrop { animation: st-veil-out 0.24s ease-in forwards; }
+@keyframes st-sheet-in { from { opacity: 0; transform: translateY(14px) scale(0.98); } }
+@keyframes st-sheet-out { to { opacity: 0; transform: translateY(8px) scale(0.985); } }
+@keyframes st-veil-in { from { opacity: 0; } }
+@keyframes st-veil-out { to { opacity: 0; } }
+
+/* 1. title */
+.st-sheet { display: grid; gap: 28px; padding: 22px 24px 26px; }
+.st-head { display: flex; align-items: center; justify-content: space-between; }
+.st-sheet h2 { margin: 0; font: 700 1.375rem/1.1 var(--s-body); letter-spacing: -0.02em; }
+.st-x {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  background: color-mix(in srgb, var(--s-text) 7%, transparent);
+  border: 1px solid color-mix(in srgb, var(--s-text) 22%, transparent);
+  border-radius: var(--s-radius, 0);
+  color: var(--s-text);
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+.st-x:hover { border-color: var(--s-accent); }
+.st-x svg { width: 14px; height: 14px; }
+
+/* 2. group headings: small, muted, upper case, no border, no hover */
+.st-group h3 {
+  margin: 0;
+  padding: 0 0 10px;
+  color: var(--s-muted);
+  font: 600 0.6875rem/1 var(--s-body);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  border-bottom: 1px solid color-mix(in srgb, var(--s-text) 20%, transparent);
+}
+
+/* 3. setting rows */
+.st-setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 60px;
+  border-bottom: 1px solid var(--s-line);
+}
+.st-label { font: 500 0.9375rem var(--s-body); color: var(--s-text); }
+.st-control { position: relative; display: flex; align-items: center; }
+
+.st-country {
+  display: inline-flex;
+  padding: 3px;
+  gap: 3px;
+  background: color-mix(in srgb, var(--s-text) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--s-text) 22%, transparent);
+  border-radius: var(--s-radius, 0);
+}
+.st-country button {
+  padding: 7px 18px;
+  background: none;
+  border: 0;
+  border-radius: var(--s-radius, 0);
+  color: var(--s-text);
+  font: 500 0.875rem var(--s-body);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.st-country button:hover { background: color-mix(in srgb, var(--s-text) 10%, transparent); }
+.st-country button[aria-pressed="true"] { background: var(--s-accent); color: var(--s-bg); font-weight: 600; }
+
+/* the Coming soon note floats under the control, over the next row, for a few seconds */
+.st-soon {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  z-index: 3;
+  padding: 6px 12px;
+  background: var(--s-bg);
+  border: 1px solid var(--s-accent);
+  border-radius: var(--s-radius, 0);
+  color: var(--s-text);
+  font: 500 0.8125rem var(--s-body);
+  white-space: nowrap;
+  text-shadow: 0 0 10px color-mix(in srgb, var(--s-accent) 70%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.st-soon.st-show { opacity: 1; }
+.st-soon::before {
+  content: "";
+  position: absolute;
+  inset: -30px -68px;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse closest-side, color-mix(in srgb, var(--s-accent) 58%, transparent) 0%, color-mix(in srgb, var(--s-accent) 28%, transparent) 42%, transparent 100%);
+  filter: blur(7px);
+  opacity: 0.5;
+}
+.st-soon.st-first { animation: st-soon-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.st-soon.st-first::before { animation: st-soon-halo 1.8s ease-out both; }
+.st-soon.st-first::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--s-accent);
+  transform-origin: left;
+  animation: st-soon-line 0.9s 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes st-soon-in { from { clip-path: inset(-140px 100% -140px 0); transform: translateY(-5px); } to { clip-path: inset(-140px); transform: none; } }
+@keyframes st-soon-halo {
+  0% { opacity: 0; transform: scale(0.55); }
+  35% { opacity: 0.75; transform: scale(1.1); }
+  100% { opacity: 0.5; transform: scale(1); }
+}
+@keyframes st-soon-line { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+.st-tbtn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 176px;
+  padding: 10px 40px 10px 12px;
+  background: color-mix(in srgb, var(--s-text) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--s-text) 22%, transparent);
+  border-radius: var(--s-radius, 0);
+  color: var(--s-text);
+  font: 500 0.875rem var(--s-body);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+.st-tbtn:hover { border-color: var(--s-accent); }
+.st-tbtn::after {
+  content: "";
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  border: solid var(--s-text);
+  border-width: 0 1.5px 1.5px 0;
+  transform: translateY(-70%) rotate(45deg);
+}
+.st-tbtn i, .st-opt i {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--sw-bg);
+  box-shadow: inset 0 0 0 1px var(--s-muted), inset 0 0 0 4px var(--sw-bg), inset 0 0 0 16px var(--sw-ac);
+}
+
+/* the themes list */
+.st-opts { display: grid; border-top: 1px solid var(--s-line); }
+.st-opt {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 2px;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--s-line);
+  color: var(--s-text);
+  font: 500 1rem var(--s-body);
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.2s ease, padding 0.25s ease;
+}
+.st-opt:hover { color: var(--s-accent); padding-left: 6px; }
+.st-dot {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin-left: auto;
+  border: 2px solid var(--s-muted);
+  border-radius: 50%;
+}
+.st-opt[aria-checked="true"] .st-dot { border-color: var(--s-accent); }
+.st-opt[aria-checked="true"] .st-dot::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--s-accent); }
+
+/* 4. page rows */
+.st-pages { display: grid; margin: 0; padding: 0; list-style: none; }
+.st-pages a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--s-line);
+  color: var(--s-text);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.st-pn { display: grid; gap: 3px; }
+.st-pn b { font: 600 0.9375rem var(--s-body); }
+.st-pn small { color: var(--s-muted); font: 400 0.8125rem var(--s-body); }
+.st-arrow {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border: solid var(--s-muted);
+  border-width: 1.5px 1.5px 0 0;
+  transform: rotate(45deg);
+  transition: transform 0.25s ease, border-color 0.2s ease;
+}
+.st-pages a:hover { color: var(--s-accent); }
+.st-pages a:hover .st-arrow { border-color: var(--s-accent); transform: translateX(4px) rotate(45deg); }
+.st-here { color: var(--s-muted); font: 500 0.75rem var(--s-body); font-style: normal; }
+.st-pages a[aria-current="page"] { pointer-events: none; }
+.st-pages a[aria-current="page"] .st-pn b { color: var(--s-muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  .st-soon.st-first, .st-soon.st-first::after, .st-soon.st-first::before { animation: none; }
+}
