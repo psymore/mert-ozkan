@@ -185,9 +185,10 @@
   html { background: var(--bg); transition: background-color 0.4s ease; }
   body {
     margin: 0;
-    min-height: 100svh;
+    height: 100svh;
+    overflow: hidden;
     display: grid;
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: auto minmax(0, 1fr) auto;
     background: var(--bg);
     color: var(--text);
     font-family: var(--body);
@@ -199,22 +200,33 @@
     padding: clamp(16px, 3vh, 28px) var(--gutter) 0;
   }
   /* Name on the left, one Settings button on the same line at the right */
-  .bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; container-type: inline-size; }
+  .bar h1 { min-width: 0; }
   .gear {
     flex: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 14px;
-    background: none;
-    border: 1px solid var(--grid);
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    padding: 0;
+    background: color-mix(in srgb, var(--text) 6%, var(--bg));
+    border: 0;
     color: var(--muted);
-    font: 500 0.875rem var(--body);
     cursor: pointer;
-    transition: color 0.2s ease, border-color 0.2s ease;
+    box-shadow: 0 0 0 1px var(--grid),
+      0 10px 24px -8px color-mix(in srgb, var(--text) 45%, transparent),
+      0 3px 8px -3px color-mix(in srgb, var(--text) 30%, transparent);
+    transition: color 0.2s ease, box-shadow 0.25s ease, transform 0.25s ease;
   }
-  .gear:hover { color: var(--text); border-color: var(--muted); }
-  .gear svg { width: 17px; height: 17px; }
+  .gear:hover {
+    color: var(--text);
+    transform: translateY(-1px);
+    box-shadow: 0 0 0 1px var(--gold),
+      0 12px 28px -8px color-mix(in srgb, var(--gold) 55%, transparent),
+      0 0 22px color-mix(in srgb, var(--gold) 28%, transparent);
+  }
+  .gear:active { transform: translateY(0); }
+  .gear svg { width: 20px; height: 20px; }
 
   /* Settings sheet */
   dialog.settings {
@@ -355,7 +367,8 @@
     margin: 0;
     font-family: var(--display);
     font-weight: var(--name-weight);
-    font-size: var(--name-size);
+    font-size: min(var(--name-size), 14.5cqw, 24svh);
+    white-space: nowrap;
     line-height: 0.95;
     letter-spacing: var(--name-tracking);
     font-optical-sizing: auto;
@@ -371,8 +384,8 @@
 
   .chart {
     position: relative;
-    min-height: 400px;
-    margin-top: clamp(12px, 3vh, 32px);
+    min-height: 0;
+    margin-top: clamp(8px, 2vh, 32px);
   }
   .chart svg {
     position: absolute;
@@ -517,6 +530,7 @@
     100% { opacity: 0; transform: scale(4.5); }
   }
 
+  @media (max-height: 640px) { .intro { display: none; } }
   @media (prefers-reduced-motion: reduce) {
     .soon.first, .soon.first::after { animation: none; }
     .series path { animation: none; stroke-dashoffset: 0; }
@@ -530,9 +544,8 @@
   <header>
     <div class="bar">
       <h1>Mert Özkan</h1>
-      <button type="button" class="gear" id="open-settings" aria-haspopup="dialog">
+      <button type="button" class="gear" id="open-settings" aria-haspopup="dialog" aria-label="Settings" title="Settings">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h9M19 7h1M4 17h1M11 17h9"/><circle cx="16" cy="7" r="2.4"/><circle cx="8" cy="17" r="2.4"/></svg>
-        Settings
       </button>
     </div>
     <p class="intro">I follow the economy closely: interest rates, inflation, jobs and currencies, and what they mean for markets. If you want to talk it through, write to me.</p>
